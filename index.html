@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Petari Link — Asia's Premium Captive-Bred Marketplace</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1D9E75;
+    --green-dark: #0F6E56;
+    --green-deep: #085041;
+    --green-light: #E1F5EE;
+    --green-mid: #9FE1CB;
+    --gold: #C9A84C;
+    --gold-light: #F5EDD8;
+    --ink: #111410;
+    --ink-mid: #3A3D38;
+    --ink-light: #7A7D78;
+    --cream: #F8F6F0;
+    --white: #FFFFFF;
+    --border: rgba(0,0,0,0.08);
+    --purple: #534AB7;
+    --purple-light: #EEEDFE;
+    --purple-dark: #3C3489;
+    --amber: #BA7517;
+    --amber-light: #FAEEDA;
+    --red-light: #FCEBEB;
+    --red: #A32D2D;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 15px;
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(248,246,240,0.96);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .nav-logo { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--ink); text-decoration: none; letter-spacing: -0.3px; }
+  .nav-logo span { color: var(--green); }
+  .nav-links { display: flex; align-items: center; gap: 6px; }
+  .nav-link { font-size: 13px; color: var(--ink-light); padding: 6px 12px; border-radius: 6px; cursor: pointer; border: none; background: none; text-decoration: none; transition: color 0.15s, background 0.15s; }
+  .nav-link:hover { color: var(--ink); background: rgba(0,0,0,0.04); }
+  .nav-cta { font-size: 13px; font-weight: 500; color: var(--white); background: var(--green); border: none; padding: 7px 16px; border-radius: 6px; cursor: pointer; transition: background 0.15s; text-decoration: none; }
+  .nav-cta:hover { background: var(--green-dark); }
+  .nav-cta.purple { background: var(--purple); }
+  .nav-cta.purple:hover { background: var(--purple-dark); }
+
+  /* PORTAL SWITCHER */
+  .portal-switcher {
+    display: flex; align-items: center; justify-content: center;
+    gap: 4px; padding: 1.5rem 2rem 0;
+  }
+  .portal-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 24px; border-radius: 8px;
+    font-size: 14px; font-weight: 500;
+    cursor: pointer; border: 1.5px solid transparent;
+    transition: all 0.2s;
+  }
+  .portal-btn.b2c-btn { background: var(--white); color: var(--ink-mid); border-color: var(--border); }
+  .portal-btn.b2c-btn.active { background: var(--green-light); color: var(--green-dark); border-color: var(--green-mid); }
+  .portal-btn.b2b-btn { background: var(--white); color: var(--ink-mid); border-color: var(--border); }
+  .portal-btn.b2b-btn.active { background: var(--purple-light); color: var(--purple-dark); border-color: #AFA9EC; }
+  .portal-label { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 999px; margin-left: 4px; }
+  .label-green { background: var(--green-light); color: var(--green-dark); }
+  .label-purple { background: var(--purple-light); color: var(--purple-dark); }
+  .portal-divider { width: 1px; height: 28px; background: var(--border); margin: 0 4px; }
+
+  /* PANELS */
+  .portal-panel { display: none; }
+  .portal-panel.active { display: block; }
+
+  /* HERO */
+  .hero {
+    padding: 5rem 2rem 3.5rem;
+    max-width: 900px; margin: 0 auto; text-align: center;
+  }
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--green-dark); background: var(--green-light);
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 3.4rem);
+    line-height: 1.15; color: var(--ink); margin-bottom: 1.25rem;
+    letter-spacing: -0.5px;
+  }
+  .hero h1 em { color: var(--green); font-style: italic; }
+  .hero-sub { font-size: 16px; color: var(--ink-light); max-width: 560px; margin: 0 auto 2rem; line-height: 1.7; }
+  .hero-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--green); color: var(--white); border: none;
+    padding: 12px 24px; border-radius: 8px; font-size: 14px; font-weight: 500;
+    cursor: pointer; transition: background 0.15s; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-primary.purple { background: var(--purple); }
+  .btn-primary.purple:hover { background: var(--purple-dark); }
+  .btn-secondary {
+    background: var(--white); color: var(--ink-mid);
+    border: 1px solid var(--border); padding: 12px 24px; border-radius: 8px;
+    font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.15s;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-secondary:hover { background: var(--cream); }
+
+  /* STATS BAR */
+  .stats-bar {
+    max-width: 900px; margin: 0 auto 3rem;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
+  }
+  .stat-item { background: var(--white); padding: 1.25rem 1.5rem; text-align: center; }
+  .stat-num { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--green); margin-bottom: 3px; }
+  .stat-label { font-size: 12px; color: var(--ink-light); }
+
+  /* SECTION */
+  section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
+  .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 8px; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--ink); }
+  .section-link { font-size: 13px; color: var(--green); cursor: pointer; text-decoration: none; }
+  .section-link:hover { text-decoration: underline; }
+
+  /* SRR BANNER */
+  .srr-banner {
+    background: var(--white); border: 1px solid var(--green-mid);
+    border-radius: 12px; padding: 1.25rem 1.5rem;
+    display: flex; align-items: center; gap: 1.25rem; margin-bottom: 2rem; flex-wrap: wrap;
+  }
+  .srr-icon {
+    width: 52px; height: 52px; border-radius: 50%; background: var(--green-light);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    font-size: 22px;
+  }
+  .srr-info { flex: 1; min-width: 200px; }
+  .srr-name { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--ink); margin-bottom: 3px; }
+  .srr-meta { font-size: 13px; color: var(--green-dark); }
+  .srr-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+
+  /* BADGE */
+  .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 9px; border-radius: 999px; }
+  .badge-green { background: var(--green-light); color: var(--green-dark); }
+  .badge-gold { background: var(--gold-light); color: #7A5A0A; }
+  .badge-amber { background: var(--amber-light); color: var(--amber); }
+  .badge-gray { background: #F1EFE8; color: #5F5E5A; }
+  .badge-purple { background: var(--purple-light); color: var(--purple-dark); }
+  .badge-red { background: var(--red-light); color: var(--red); }
+
+  /* FILTER ROW */
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1.5rem; align-items: center; }
+  .filter-chip {
+    font-size: 13px; padding: 5px 14px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--white);
+    color: var(--ink-light); cursor: pointer; transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .filter-chip:hover { border-color: var(--green-mid); color: var(--green-dark); }
+  .filter-chip.active { background: var(--green-light); color: var(--green-dark); border-color: var(--green-mid); font-weight: 500; }
+  .filter-search {
+    flex: 1; min-width: 180px; max-width: 260px;
+    padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border);
+    background: var(--white); font-size: 13px; color: var(--ink); outline: none;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .filter-search:focus { border-color: var(--green-mid); }
+
+  /* LISTINGS GRID */
+  .listings-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; margin-bottom: 2rem; }
+  .listing-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; cursor: pointer; transition: border-color 0.15s, transform 0.15s;
+  }
+  .listing-card:hover { border-color: var(--green-mid); transform: translateY(-2px); }
+  .listing-img {
+    height: 150px; background: var(--cream); display: flex; align-items: center;
+    justify-content: center; font-size: 56px; border-bottom: 1px solid var(--border);
+  }
+  .listing-body { padding: 12px 14px 14px; }
+  .listing-title { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--ink); margin-bottom: 3px; }
+  .listing-sub { font-size: 12px; color: var(--ink-light); margin-bottom: 8px; }
+  .listing-footer { display: flex; align-items: center; justify-content: space-between; }
+  .listing-price { font-size: 16px; font-weight: 500; color: var(--green-dark); }
+  .listing-fav { background: none; border: none; cursor: pointer; font-size: 18px; color: #DDD; padding: 0; line-height: 1; transition: color 0.15s; }
+  .listing-fav:hover { color: #E24B4A; }
+  .listing-fav.liked { color: #E24B4A; }
+  .listing-farm { font-size: 11px; color: var(--ink-light); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 4px; }
+
+  /* INFO NOTICE */
+  .notice {
+    background: var(--green-light); border-radius: 10px; padding: 12px 16px;
+    font-size: 13px; color: var(--green-dark); display: flex; align-items: flex-start; gap: 10px;
+    margin-bottom: 1rem; line-height: 1.5;
+  }
+  .notice-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── B2B ── */
+  .b2b-hero {
+    background: var(--white); border: 1px solid #AFA9EC;
+    border-radius: 16px; padding: 2rem 2rem 1.75rem; margin-bottom: 2rem;
+  }
+  .b2b-hero h2 { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: var(--ink); margin-bottom: 0.5rem; line-height: 1.3; }
+  .b2b-hero p { font-size: 14px; color: var(--ink-light); max-width: 600px; line-height: 1.7; margin-bottom: 1.25rem; }
+
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 12px; margin-bottom: 2rem; }
+  .step-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; }
+  .step-num { font-size: 11px; font-weight: 500; color: var(--purple); letter-spacing: 0.5px; margin-bottom: 6px; }
+  .step-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+  .step-sub { font-size: 12px; color: var(--ink-light); line-height: 1.5; }
+
+  .catalog-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; margin-bottom: 2rem; }
+  .catalog-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; transition: border-color 0.15s; cursor: pointer; }
+  .catalog-card:hover { border-color: #AFA9EC; }
+  .catalog-icon { font-size: 38px; margin-bottom: 10px; }
+  .catalog-title { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--ink); margin-bottom: 4px; }
+  .catalog-sub { font-size: 12px; color: var(--ink-light); margin-bottom: 12px; line-height: 1.5; }
+  .catalog-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); }
+  .catalog-price { font-size: 13px; font-weight: 500; color: var(--purple); }
+  .catalog-moq { font-size: 11px; color: var(--ink-light); }
+
+  .countries-section { margin-bottom: 2rem; }
+  .countries-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 0.75rem; }
+  .countries-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .country-pill {
+    font-size: 12px; padding: 4px 12px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--white);
+    color: var(--ink-light); cursor: pointer; transition: all 0.15s;
+  }
+  .country-pill:hover { border-color: #AFA9EC; color: var(--purple-dark); }
+  .country-pill.selected { background: var(--purple-light); color: var(--purple-dark); border-color: #AFA9EC; }
+
+  /* INQUIRY FORM */
+  .inquiry-section { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 1.75rem 2rem; margin-bottom: 2rem; }
+  .inquiry-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--ink); margin-bottom: 4px; }
+  .inquiry-sub { font-size: 13px; color: var(--ink-light); margin-bottom: 1.5rem; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 12px; }
+  .form-field { display: flex; flex-direction: column; gap: 5px; }
+  .form-label { font-size: 12px; font-weight: 500; color: var(--ink-light); }
+  .form-input {
+    padding: 9px 12px; border: 1px solid var(--border); border-radius: 8px;
+    font-size: 13px; font-family: 'DM Sans', sans-serif; color: var(--ink);
+    background: var(--white); outline: none; transition: border-color 0.15s;
+  }
+  .form-input:focus { border-color: var(--green-mid); }
+  .form-input.purple:focus { border-color: #AFA9EC; }
+  textarea.form-input { resize: vertical; min-height: 80px; }
+  .form-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 4px; }
+  .form-note { font-size: 12px; color: var(--ink-light); }
+
+  /* VALUES */
+  .values-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 2rem; }
+  .value-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.25rem; }
+  .value-icon { font-size: 22px; margin-bottom: 8px; }
+  .value-title { font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+  .value-desc { font-size: 12px; color: var(--ink-light); line-height: 1.5; }
+
+  /* ABOUT */
+  .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+  @media (max-width: 600px) { .about-grid { grid-template-columns: 1fr; } }
+  .about-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+  .about-lang { font-size: 11px; font-weight: 500; color: var(--ink-light); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 8px; }
+  .about-text { font-size: 13px; color: var(--ink-mid); line-height: 1.8; }
+
+  /* FOOTER */
+  footer {
+    background: var(--ink); color: rgba(255,255,255,0.6);
+    padding: 3rem 2rem; text-align: center;
+  }
+  .footer-logo { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--white); margin-bottom: 0.5rem; }
+  .footer-logo span { color: var(--green-mid); }
+  .footer-sub { font-size: 13px; margin-bottom: 1.5rem; }
+  .footer-links { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .footer-link { font-size: 13px; color: rgba(255,255,255,0.5); cursor: pointer; text-decoration: none; transition: color 0.15s; }
+  .footer-link:hover { color: var(--white); }
+  .footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+  .footer-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .footer-badge { font-size: 11px; padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.5); }
+
+  /* DIVIDER */
+  hr { border: none; border-top: 1px solid var(--border); margin: 0 0 2.5rem; }
+
+  /* RESPONSIVE NAV */
+  @media (max-width: 640px) {
+    nav { padding: 0 1rem; }
+    .nav-links .nav-link { display: none; }
+    section { padding: 0 1rem 3rem; }
+    .hero { padding: 3rem 1rem 2rem; }
+    .portal-switcher { padding: 1rem 1rem 0; }
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-up { animation: fadeUp 0.5s ease both; }
+  .fade-up-2 { animation: fadeUp 0.5s 0.1s ease both; }
+  .fade-up-3 { animation: fadeUp 0.5s 0.2s ease both; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-logo" href="#"><span>Petari</span>Link</a>
+  <div class="nav-links">
+    <a class="nav-link" href="#about">About</a>
+    <a class="nav-link" href="#listings">Listings</a>
+    <a class="nav-link" id="nav-trade-link" href="#b2b-section">Trade portal</a>
+    <a class="nav-cta" id="nav-main-cta" href="#inquiry">Enquire now</a>
+  </div>
+</nav>
+
+<!-- PORTAL SWITCHER -->
+<div class="portal-switcher">
+  <button class="portal-btn b2c-btn active" id="btn-b2c" onclick="switchPortal('b2c')">
+    🛍️ Public marketplace
+    <span class="portal-label label-green">B2C</span>
+  </button>
+  <div class="portal-divider"></div>
+  <button class="portal-btn b2b-btn" id="btn-b2b" onclick="switchPortal('b2b')">
+    🏢 Importer portal
+    <span class="portal-label label-purple">B2B</span>
+  </button>
+</div>
+
+<!-- ════════════════════ B2C PANEL ════════════════════ -->
+<div class="portal-panel active" id="panel-b2c">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow fade-up">🇹🇭 Thailand · Captive-bred · Worldwide export</div>
+    <h1 class="fade-up-2">Asia's finest animals,<br><em>shipped to your door</em></h1>
+    <p class="hero-sub fade-up-3">Petari Link is Thailand's curated captive-bred marketplace. Every animal hand-selected from verified Thai farms — health-checked, CITES documented, and ready for worldwide export.</p>
+    <div class="hero-actions fade-up-3">
+      <a class="btn-primary" href="#listings">Browse listings ↓</a>
+      <a class="btn-secondary" href="#about">Our story</a>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div style="max-width:900px;margin:0 auto;padding:0 2rem;">
+    <div class="stats-bar fade-up-3">
+      <div class="stat-item"><div class="stat-num">18+</div><div class="stat-label">Live this week</div></div>
+      <div class="stat-item"><div class="stat-num">38+</div><div class="stat-label">Countries shipped</div></div>
+      <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">CITES documented</div></div>
+      <div class="stat-item"><div class="stat-num">10+</div><div class="stat-label">Years exporting</div></div>
+    </div>
+  </div>
+
+  <!-- LISTINGS -->
+  <section id="listings" style="padding-top:3rem;">
+    <div class="srr-banner">
+      <div class="srr-icon">🐍</div>
+      <div class="srr-info">
+        <div class="srr-name">Siam Reptile Ranch</div>
+        <div class="srr-meta">Bangkok, Thailand · Flagship verified farm · Weekly export departures</div>
+        <div class="srr-badges">
+          <span class="badge badge-green">✓ Verified farm</span>
+          <span class="badge badge-gold">★ Flagship partner</span>
+          <span class="badge badge-amber">✈ Weekly exports</span>
+          <span class="badge badge-gray">CITES certified</span>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="document.getElementById('inquiry').scrollIntoView({behavior:'smooth'})">Enquire →</button>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">This week's listings</div>
+      <a class="section-link" href="#">View all →</a>
+    </div>
+
+    <div class="filter-row">
+      <input class="filter-search" type="text" placeholder="Search morph, species…" oninput="filterListings(this.value)">
+      <button class="filter-chip active" onclick="setFilter('all',this)">All</button>
+      <button class="filter-chip" onclick="setFilter('python',this)">Ball pythons</button>
+      <button class="filter-chip" onclick="setFilter('gecko',this)">Geckos</button>
+      <button class="filter-chip" onclick="setFilter('tortoise',this)">Tortoises</button>
+      <button class="filter-chip" onclick="setFilter('female',this)">Female</button>
+      <button class="filter-chip" onclick="setFilter('male',this)">Male</button>
+      <button class="filter-chip" onclick="setFilter('under500',this)">Under $500</button>
+    </div>
+
+    <div class="listings-grid" id="listings-grid"></div>
+
+    <div class="notice">
+      <span class="notice-icon">✈</span>
+      <span>All animals ship from Bangkok, Thailand with full CITES export documentation handled by Siam Reptile Ranch. Buyers are responsible for import permits in their country. Contact us for country-specific requirements.</span>
+    </div>
+  </section>
+
+  <!-- VALUES -->
+  <section id="about">
+    <hr>
+    <div class="section-header">
+      <div class="section-title">Why Petari Link</div>
+    </div>
+    <div class="values-grid">
+      <div class="value-card"><div class="value-icon">🔍</div><div class="value-title">Quality first</div><div class="value-desc">Every listing reviewed for health, genetics, and responsible husbandry before going live.</div></div>
+      <div class="value-card"><div class="value-icon">📋</div><div class="value-title">Full transparency</div><div class="value-desc">Clear information, honest communication, and verified breeder profiles on every listing.</div></div>
+      <div class="value-card"><div class="value-icon">✂️</div><div class="value-title">Limited & curated</div><div class="value-desc">Fewer listings, higher standards. Better visibility for breeders, better quality for buyers.</div></div>
+      <div class="value-card"><div class="value-icon">🌏</div><div class="value-title">Global access</div><div class="value-desc">Thailand's best captive-bred animals reaching collectors and shops worldwide.</div></div>
+      <div class="value-card"><div class="value-icon">🤝</div><div class="value-title">Responsible breeding</div><div class="value-desc">We promote ethical practices, long-term animal welfare, and full CITES compliance.</div></div>
+    </div>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="about-lang">🇬🇧 Our story</div>
+        <div class="about-text">Petari Link was founded with a clear vision: to modernize how Asia's captive-bred animals reach the world. Our journey began with Siam Reptile Ranch, one of Thailand's leading reptile breeding operations. After serving global buyers for years, we built a platform that represents Asian breeders with the professionalism they deserve.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-lang">🇹🇭 เรื่องราวของเรา</div>
+        <div class="about-text">Petari Link ก่อตั้งขึ้นจากวิสัยทัศน์ที่ชัดเจน: ยกระดับการนำสัตว์เพาะเลี้ยงจากเอเชียสู่ตลาดโลก จุดเริ่มต้นมาจาก Siam Reptile Ranch ฟาร์มเพาะเลี้ยงชั้นนำของไทย ด้วยมาตรฐานสูง ความโปร่งใส และระบบโลจิสติกส์ระดับโลก</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- B2C INQUIRY -->
+  <section id="inquiry">
+    <div class="inquiry-section">
+      <div class="inquiry-title">Interested in an animal?</div>
+      <div class="inquiry-sub">Send us an enquiry and our team will respond within 24 hours with availability, pricing, and export details.</div>
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Your name</label><input class="form-input" type="text" placeholder="Full name"></div>
+        <div class="form-field"><label class="form-label">Email address</label><input class="form-input" type="email" placeholder="you@email.com"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Country</label><input class="form-input" type="text" placeholder="Your country"></div>
+        <div class="form-field"><label class="form-label">Animal of interest</label><input class="form-input" type="text" placeholder="e.g. Banana Pinstripe Ball Python"></div>
+      </div>
+      <div class="form-field" style="margin-bottom:12px;"><label class="form-label">Message</label><textarea class="form-input" placeholder="Questions about shipping, import requirements, availability…"></textarea></div>
+      <div class="form-footer">
+        <span class="form-note">We respond within 24 hours · All exports fully documented</span>
+        <button class="btn-primary" onclick="showSuccess('b2c')">Send enquiry →</button>
+      </div>
+      <div id="success-b2c" style="display:none;margin-top:1rem;background:var(--green-light);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--green-dark);">✓ Enquiry sent! Our team will be in touch within 24 hours.</div>
+    </div>
+  </section>
+
+</div>
+<!-- END B2C -->
+
+
+<!-- ════════════════════ B2B PANEL ════════════════════ -->
+<div class="portal-panel" id="panel-b2b">
+
+  <!-- HERO -->
+  <div class="hero" style="padding-bottom:2rem;">
+    <div class="hero-eyebrow fade-up" style="background:var(--purple-light);color:var(--purple-dark);">🏢 Trade portal · Verified importers only</div>
+    <h1 class="fade-up-2" style="color:var(--ink);">Source premium Thai animals<br><em style="color:var(--purple);">at wholesale scale</em></h1>
+    <p class="hero-sub fade-up-3">Petari Link — powered by Siam Reptile Ranch — offers weekly export shipments to verified pet shops, importers, and distributors worldwide. Full CITES documentation, professional packaging, and global freight handled end-to-end.</p>
+    <div class="hero-actions fade-up-3">
+      <a class="btn-primary purple" href="#b2b-apply">Apply as importer →</a>
+      <a class="btn-secondary" href="#b2b-catalog">View catalog</a>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div style="max-width:900px;margin:0 auto;padding:0 2rem;">
+    <div class="stats-bar fade-up-3">
+      <div class="stat-item"><div class="stat-num" style="color:var(--purple);">Weekly</div><div class="stat-label">Export departures from BKK</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--purple);">38+</div><div class="stat-label">Countries reached</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--purple);">24hr</div><div class="stat-label">Quote turnaround</div></div>
+      <div class="stat-item"><div class="stat-num" style="color:var(--purple);">10+</div><div class="stat-label">Years export experience</div></div>
+    </div>
+  </div>
+
+  <section id="b2b-section" style="padding-top:3rem;">
+    <div class="b2b-hero">
+      <h2>Your gateway to Asia's best captive-breds</h2>
+      <p>Petari Link handles everything from breeding to your doorstep — CITES permits, veterinary health certificates, IATA-compliant packaging, and international air freight. You focus on selling; we handle the supply chain.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-purple">CITES documented</span>
+        <span class="badge badge-green">Health certified</span>
+        <span class="badge badge-gold">IATA packaging</span>
+        <span class="badge badge-amber">Weekly Bangkok departures</span>
+        <span class="badge badge-gray">Live arrival guarantee</span>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">How it works</div>
+    </div>
+    <div class="steps-grid" style="margin-bottom:2.5rem;">
+      <div class="step-card"><div class="step-num">STEP 01</div><div class="step-title">Apply & verify</div><div class="step-sub">Submit your business license and import permit details for your country.</div></div>
+      <div class="step-card"><div class="step-num">STEP 02</div><div class="step-title">Browse & request</div><div class="step-sub">Access the wholesale catalog and submit quantity requests for available stock.</div></div>
+      <div class="step-card"><div class="step-num">STEP 03</div><div class="step-title">Quote & confirm</div><div class="step-sub">Receive a full quote including CITES fees, freight, insurance, and packaging.</div></div>
+      <div class="step-card"><div class="step-num">STEP 04</div><div class="step-title">Ship & track</div><div class="step-sub">Weekly departures from Bangkok. Live tracking provided. Live arrival guarantee.</div></div>
+    </div>
+
+    <div class="section-header" id="b2b-catalog">
+      <div class="section-title">Wholesale catalog</div>
+      <a class="section-link" href="#b2b-apply">Request full price list →</a>
+    </div>
+    <div class="catalog-grid">
+      <div class="catalog-card">
+        <div class="catalog-icon">🐍</div>
+        <div class="catalog-title">Ball pythons</div>
+        <div class="catalog-sub">Pastel, Banana, Clown, Spider, Mojave, Lesser, Pinstripe, Enchi & designer combos. CB, feeding F/T.</div>
+        <div class="catalog-footer"><span class="catalog-price">From $150/animal</span><span class="catalog-moq">MOQ: 5 animals</span></div>
+      </div>
+      <div class="catalog-card">
+        <div class="catalog-icon">🦎</div>
+        <div class="catalog-title">Leopard geckos</div>
+        <div class="catalog-sub">Tremper, Bell & Rainwater albinos. Tangerine, RAPTOR, Eclipse, Blizzard, Mack Snow.</div>
+        <div class="catalog-footer"><span class="catalog-price">From $50/animal</span><span class="catalog-moq">MOQ: 10 animals</span></div>
+      </div>
+      <div class="catalog-card">
+        <div class="catalog-icon">🐢</div>
+        <div class="catalog-title">Tortoises</div>
+        <div class="catalog-sub">Sulcata, Indian Star, Elongated tortoise. CITES Appendix II with full documentation.</div>
+        <div class="catalog-footer"><span class="catalog-price">From $100/animal</span><span class="catalog-moq">MOQ: 3 animals</span></div>
+      </div>
+      <div class="catalog-card">
+        <div class="catalog-icon">🐍</div>
+        <div class="catalog-title">Boas</div>
+        <div class="catalog-sub">Common boa, Columbian, Hog Island. Hypo, Motley, Albino morphs available.</div>
+        <div class="catalog-footer"><span class="catalog-price">From $200/animal</span><span class="catalog-moq">MOQ: 3 animals</span></div>
+      </div>
+      <div class="catalog-card">
+        <div class="catalog-icon">🦎</div>
+        <div class="catalog-title">Monitor lizards</div>
+        <div class="catalog-sub">Ackie monitors, Blackthroat, Savannah. CB only. CITES documented.</div>
+        <div class="catalog-footer"><span class="catalog-price">From $300/animal</span><span class="catalog-moq">MOQ: 2 animals</span></div>
+      </div>
+      <div class="catalog-card">
+        <div class="catalog-icon">🦎</div>
+        <div class="catalog-title">Crested geckos</div>
+        <div class="catalog-sub">Harlequin, Dalmatian, Pinstripe, Lily White, Tricolor. High-pattern selections.</div>
+        <div class="catalog-footer"><span class="catalog-price">From $80/animal</span><span class="catalog-moq">MOQ: 5 animals</span></div>
+      </div>
+    </div>
+
+    <div class="countries-section">
+      <div class="countries-title">We currently ship to</div>
+      <div class="countries-grid" id="countries-grid">
+        <span class="country-pill selected" onclick="this.classList.toggle('selected')">🇺🇸 USA</span>
+        <span class="country-pill selected" onclick="this.classList.toggle('selected')">🇩🇪 Germany</span>
+        <span class="country-pill selected" onclick="this.classList.toggle('selected')">🇳🇱 Netherlands</span>
+        <span class="country-pill selected" onclick="this.classList.toggle('selected')">🇬🇧 United Kingdom</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇫🇷 France</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇧🇪 Belgium</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇨🇿 Czech Republic</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇵🇱 Poland</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇮🇹 Italy</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇯🇵 Japan</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇸🇬 Singapore</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇰🇷 South Korea</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇦🇺 Australia*</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇨🇦 Canada</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇸🇪 Sweden</span>
+        <span class="country-pill" onclick="this.classList.toggle('selected')">🇩🇰 Denmark</span>
+      </div>
+      <div style="font-size:11px;color:var(--ink-light);margin-top:8px;">* Select species only · Contact us for import requirements specific to your country</div>
+    </div>
+
+    <div class="notice" style="background:var(--purple-light);color:var(--purple-dark);">
+      <span class="notice-icon">📋</span>
+      <span>All B2B orders include: CITES export permit, government veterinary health certificate, IATA Live Animals Regulations compliant packaging, and pre-shipment health inspection. Buyers must hold valid import permits for their country.</span>
+    </div>
+  </section>
+
+  <!-- B2B INQUIRY -->
+  <section id="b2b-apply">
+    <div class="inquiry-section" style="border-color:#AFA9EC;">
+      <div class="inquiry-title">Apply as a verified importer</div>
+      <div class="inquiry-sub">Fill in your business details below. We'll review your application and respond within 24 hours with your access and a full wholesale price list.</div>
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Business / shop name</label><input class="form-input purple" type="text" placeholder="Your company name"></div>
+        <div class="form-field"><label class="form-label">Country of import</label>
+          <select class="form-input purple">
+            <option>Select country</option><option>USA</option><option>Germany</option><option>Netherlands</option><option>United Kingdom</option><option>France</option><option>Belgium</option><option>Japan</option><option>Singapore</option><option>South Korea</option><option>Australia</option><option>Canada</option><option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Trade email</label><input class="form-input purple" type="email" placeholder="trade@yourshop.com"></div>
+        <div class="form-field"><label class="form-label">WhatsApp / phone</label><input class="form-input purple" type="text" placeholder="+1 xxx xxx xxxx"></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Business website or social</label><input class="form-input purple" type="text" placeholder="yourshop.com or instagram"></div>
+        <div class="form-field"><label class="form-label">Species of interest</label>
+          <select class="form-input purple">
+            <option>Ball pythons</option><option>Leopard geckos</option><option>Tortoises</option><option>Boas</option><option>Monitors</option><option>Mixed / multiple species</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-field" style="margin-bottom:12px;"><label class="form-label">Order details & estimated quantities</label><textarea class="form-input purple" placeholder="e.g. 20x Pastel ball pythons per month, 30x Leopard geckos mixed morphs…"></textarea></div>
+      <div class="form-footer">
+        <span class="form-note">Reviewed within 24 hours · Full price list sent on approval</span>
+        <button class="btn-primary purple" onclick="showSuccess('b2b')">Submit application →</button>
+      </div>
+      <div id="success-b2b" style="display:none;margin-top:1rem;background:var(--purple-light);border-radius:8px;padding:12px 16px;font-size:13px;color:var(--purple-dark);">✓ Application received! We'll review your details and be in touch within 24 hours.</div>
+    </div>
+  </section>
+
+</div>
+<!-- END B2B -->
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo"><span>Petari</span>Link</div>
+  <div class="footer-sub">Asia's premium captive-bred marketplace · Powered by Siam Reptile Ranch · Bangkok, Thailand</div>
+  <div class="footer-badges">
+    <span class="footer-badge">🇹🇭 Thailand origin</span>
+    <span class="footer-badge">CITES compliant</span>
+    <span class="footer-badge">Worldwide export</span>
+    <span class="footer-badge">CB only</span>
+  </div>
+  <div class="footer-links">
+    <a class="footer-link" href="#listings">Marketplace</a>
+    <a class="footer-link" href="#b2b-section">Trade portal</a>
+    <a class="footer-link" href="#about">About</a>
+    <a class="footer-link" href="#inquiry">Contact</a>
+    <a class="footer-link" href="#">Siam Reptile Ranch</a>
+  </div>
+  <div class="footer-copy">© 2025 Petari Link · All animals captive-bred · CITES documentation on every export</div>
+</footer>
+
+<script>
+const listings = [
+  { emoji:"🐍", title:"Banana Pinstripe", sub:"Ball Python · Female · 650g", price:"$680", sex:"female", type:"python", farm:"Siam Reptile Ranch", status:"available" },
+  { emoji:"🐍", title:"Clown Lesser", sub:"Ball Python · Female · 980g", price:"$1,200", sex:"female", type:"python", farm:"Siam Reptile Ranch", status:"available" },
+  { emoji:"🐍", title:"Pastel Yellowbelly", sub:"Ball Python · Male · 410g", price:"$320", sex:"male", type:"python", farm:"Siam Reptile Ranch", status:"last" },
+  { emoji:"🐍", title:"Mojave Spider", sub:"Ball Python · Male · 520g", price:"$390", sex:"male", type:"python", farm:"Siam Reptile Ranch", status:"available" },
+  { emoji:"🦎", title:"Tangerine Tremper", sub:"Leopard Gecko · Female", price:"$180", sex:"female", type:"gecko", farm:"Siam Reptile Ranch", status:"available" },
+  { emoji:"🦎", title:"RAPTOR Eclipse", sub:"Leopard Gecko · Male", price:"$240", sex:"male", type:"gecko", farm:"Siam Reptile Ranch", status:"available" },
+  { emoji:"🐢", title:"Indian Star", sub:"Tortoise · Male · CB2023", price:"$540", sex:"male", type:"tortoise", farm:"Siam Reptile Ranch", status:"available" },
+  { emoji:"🐍", title:"Enchi Fire", sub:"Ball Python · Female · 740g", price:"$450", sex:"female", type:"python", farm:"Siam Reptile Ranch", status:"available" },
+];
+
+let currentFilter = 'all';
+let liked = new Set();
+
+function renderListings(data) {
+  const grid = document.getElementById('listings-grid');
+  grid.innerHTML = '';
+  data.forEach((l, i) => {
+    const statusBadge = l.status === 'last'
+      ? `<span class="badge badge-amber">Last one</span>`
+      : `<span class="badge badge-green">✓ Available</span>`;
+    const isLiked = liked.has(i);
+    const card = document.createElement('div');
+    card.className = 'listing-card';
+    card.innerHTML = `
+      <div class="listing-img">${l.emoji}</div>
+      <div class="listing-body">
+        <div style="margin-bottom:6px;">${statusBadge}</div>
+        <div class="listing-title">${l.title}</div>
+        <div class="listing-sub">${l.sub}</div>
+        <div class="listing-footer">
+          <span class="listing-price">${l.price}</span>
+          <button class="listing-fav ${isLiked?'liked':''}" data-i="${i}" onclick="toggleLike(${i},this)" aria-label="Save to wishlist">${isLiked?'♥':'♡'}</button>
+        </div>
+        <div class="listing-farm">✓ ${l.farm} · Thailand</div>
+      </div>`;
+    grid.appendChild(card);
+  });
+  if (data.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--ink-light);padding:2rem;font-size:14px;">No listings match this filter.</div>';
+  }
+}
+
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilter();
+}
+
+function filterListings(query) {
+  const q = query.toLowerCase();
+  const filtered = listings.filter(l =>
+    (currentFilter === 'all' || matchFilter(l, currentFilter)) &&
+    (l.title.toLowerCase().includes(q) || l.sub.toLowerCase().includes(q))
+  );
+  renderListings(filtered);
+}
+
+function matchFilter(l, f) {
+  if (f === 'python') return l.type === 'python';
+  if (f === 'gecko') return l.type === 'gecko';
+  if (f === 'tortoise') return l.type === 'tortoise';
+  if (f === 'female') return l.sex === 'female';
+  if (f === 'male') return l.sex === 'male';
+  if (f === 'under500') return parseInt(l.price.replace('$','').replace(',','')) < 500;
+  return true;
+}
+
+function applyFilter() {
+  const query = document.querySelector('.filter-search').value.toLowerCase();
+  const filtered = listings.filter(l =>
+    matchFilter(l, currentFilter) &&
+    (l.title.toLowerCase().includes(query) || l.sub.toLowerCase().includes(query))
+  );
+  renderListings(filtered);
+}
+
+function toggleLike(i, btn) {
+  if (liked.has(i)) { liked.delete(i); btn.textContent = '♡'; btn.classList.remove('liked'); }
+  else { liked.add(i); btn.textContent = '♥'; btn.classList.add('liked'); }
+}
+
+function switchPortal(name) {
+  document.querySelectorAll('.portal-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.portal-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.getElementById('btn-'+name).classList.add('active');
+  const cta = document.getElementById('nav-main-cta');
+  if (name === 'b2b') {
+    cta.textContent = 'Apply as importer';
+    cta.href = '#b2b-apply';
+    cta.classList.add('purple');
+  } else {
+    cta.textContent = 'Enquire now';
+    cta.href = '#inquiry';
+    cta.classList.remove('purple');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function showSuccess(type) {
+  const el = document.getElementById('success-'+type);
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 5000);
+}
+
+renderListings(listings);
+</script>
+</body>
+</html>
