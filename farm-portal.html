@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Farm Portal — Petari Link</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --green:#1D9E75;--green-dark:#0F6E56;--green-light:#E1F5EE;--green-mid:#9FE1CB;
+  --ink:#111410;--ink-mid:#3A3D38;--ink-light:#7A7D78;--ink-faint:#A8ABA6;
+  --cream:#F8F6F0;--cream-dark:#EEE9DF;--white:#FFFFFF;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);
+  --red:#A32D2D;--red-light:#FCEBEB;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);font-size:15px;}
+/* SCREENS */
+.screen{display:none;min-height:100vh;}
+.screen.active{display:block;}
+/* NAV */
+.portal-nav{position:sticky;top:0;z-index:100;background:var(--white);border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:58px;}
+.portal-nav-logo{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;color:var(--ink);text-decoration:none;letter-spacing:-0.5px;}
+.portal-nav-logo span{color:var(--green);}
+.portal-nav-right{display:flex;align-items:center;gap:8px;}
+.nav-btn{font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer;border:1px solid var(--border2);background:var(--white);color:var(--ink-light);text-decoration:none;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.nav-btn:hover{border-color:var(--green-mid);color:var(--green-dark);}
+.nav-btn.green{background:var(--green);color:#fff;border-color:var(--green);}
+.nav-btn.green:hover{background:var(--green-dark);}
+/* AUTH */
+.auth-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem 1rem;background:var(--cream);}
+.auth-box{background:var(--white);border:1px solid var(--border2);border-radius:14px;width:100%;max-width:420px;overflow:hidden;}
+.auth-header{padding:1.5rem 1.5rem 0;text-align:center;}
+.auth-logo{font-family:'Outfit',sans-serif;font-size:26px;font-weight:800;color:var(--ink);letter-spacing:-0.5px;margin-bottom:4px;}
+.auth-logo span{color:var(--green);}
+.auth-sub{font-size:13px;color:var(--ink-light);margin-bottom:1.5rem;}
+.auth-tabs{display:flex;border-bottom:1px solid var(--border);}
+.auth-tab{flex:1;padding:11px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--ink-light);transition:all 0.15s;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;}
+.auth-tab.active{color:var(--green-dark);border-bottom-color:var(--green);}
+.auth-body{padding:1.25rem 1.5rem 1.5rem;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+.field input,.field select,.field textarea{width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:7px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--ink);background:var(--white);outline:none;transition:border-color 0.15s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green-mid);}
+.field textarea{resize:vertical;min-height:70px;}
+.btn-full{width:100%;padding:12px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s;margin-top:4px;}
+.btn-full:hover{background:var(--green-dark);}
+.btn-full:disabled{opacity:0.6;cursor:not-allowed;}
+.auth-err{display:none;background:var(--red-light);color:var(--red);border-radius:7px;padding:9px 12px;font-size:12px;font-weight:500;margin-bottom:10px;}
+.auth-ok{display:none;background:var(--green-light);color:var(--green-dark);border-radius:7px;padding:9px 12px;font-size:12px;font-weight:500;margin-bottom:10px;}
+.auth-footer{text-align:center;font-size:12px;color:var(--ink-faint);margin-top:12px;}
+.auth-footer a{color:var(--green);font-weight:600;text-decoration:none;}
+.auth-link-row{text-align:center;margin-top:8px;font-size:12px;}
+.auth-link-row a{color:var(--green-dark);font-weight:600;cursor:pointer;text-decoration:none;font-size:12px;}
+/* PENDING / REJECTED */
+.status-screen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem 1rem;}
+.status-box{background:var(--white);border:1px solid var(--border2);border-radius:14px;padding:2rem;max-width:400px;width:100%;text-align:center;}
+.status-icon{font-size:48px;margin-bottom:12px;}
+.status-title{font-family:'Outfit',sans-serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px;}
+.status-sub{font-size:13px;color:var(--ink-light);line-height:1.6;}
+/* DASHBOARD */
+.dash{display:flex;flex-direction:column;min-height:100vh;}
+.tab-bar{display:flex;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:58px;z-index:50;}
+.tab-btn{flex:1;padding:12px 6px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--ink-light);border-bottom:2px solid transparent;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.tab-btn.active{color:var(--green-dark);border-bottom-color:var(--green);}
+.tab-content{display:none;padding:1.25rem 1rem;flex:1;}
+.tab-content.active{display:block;}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1.25rem;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem;text-align:center;}
+.stat-num{font-family:'Outfit',sans-serif;font-size:24px;font-weight:700;color:var(--green);}
+.stat-label{font-size:11px;color:var(--ink-light);margin-top:2px;}
+/* LISTINGS TABLE */
+.section-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.listing-row{background:var(--white);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px;}
+.listing-row-emoji{font-size:24px;flex-shrink:0;}
+.listing-row-info{flex:1;min-width:0;}
+.listing-row-title{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.listing-row-sub{font-size:11px;color:var(--ink-light);}
+.listing-row-price{font-size:13px;font-weight:700;color:var(--green-dark);white-space:nowrap;}
+.listing-row-actions{display:flex;gap:6px;flex-shrink:0;}
+.pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:0.3px;}
+.pill-available{background:var(--green-light);color:var(--green-dark);}
+.pill-pending{background:var(--amber-light);color:var(--amber);}
+.pill-approved{background:var(--green-light);color:var(--green-dark);}
+.pill-sold{background:#EDEDE8;color:var(--ink-faint);}
+.pill-hidden{background:#EDEDE8;color:var(--ink-faint);}
+.pill-rejected{background:var(--red-light);color:var(--red);}
+.countdown{font-size:10px;font-weight:700;padding:2px 7px;border-radius:999px;white-space:nowrap;}
+.cd-green{background:var(--green-light);color:var(--green-dark);}
+.cd-amber{background:var(--amber-light);color:var(--amber);}
+.cd-red{background:var(--red-light);color:var(--red);}
+.expired-section{margin-top:1.5rem;}
+.expired-title{font-size:12px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
+.expired-row{background:var(--cream);border:1px solid var(--border);border-radius:9px;padding:12px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;opacity:0.7;}
+/* FORM */
+.form-card{background:var(--white);border:1px solid var(--border);border-radius:12px;padding:1.25rem;margin-bottom:1rem;}
+.form-card-title{font-family:'Outfit',sans-serif;font-size:14px;font-weight:700;color:var(--ink);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.3px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.morph-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.morph-tag{font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--border2);background:var(--cream);color:var(--ink-mid);cursor:pointer;transition:all 0.15s;}
+.morph-tag:hover,.morph-tag.selected{background:var(--green);color:#fff;border-color:var(--green);}
+/* EMOJI GRID */
+.emoji-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:4px;}
+.emoji-opt{width:52px;height:52px;font-size:28px;border-radius:9px;border:2px solid var(--border2);background:var(--cream);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.15s;}
+.emoji-opt.selected,.emoji-opt:hover{border-color:var(--green);background:var(--green-light);}
+/* PHOTO GRID */
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px;}
+.photo-slot{border-radius:8px;border:2px dashed var(--border2);aspect-ratio:1;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;background:var(--cream);transition:border-color 0.15s;}
+.photo-slot:hover{border-color:var(--green-mid);}
+.photo-slot img{width:100%;height:100%;object-fit:cover;}
+.photo-slot-empty{display:flex;flex-direction:column;align-items:center;gap:4px;color:var(--ink-faint);font-size:11px;}
+.photo-slot-del{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--white);color:var(--ink-mid);transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.btn:hover{border-color:var(--green-mid);color:var(--green-dark);}
+.btn.primary{background:var(--green);color:#fff;border-color:var(--green);}
+.btn.primary:hover{background:var(--green-dark);}
+.btn.danger{color:var(--red);}
+.btn.danger:hover{background:var(--red-light);border-color:rgba(160,45,45,0.3);}
+.btn.sm{padding:5px 10px;font-size:11px;}
+.save-btn{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px;transition:background 0.15s;}
+.save-btn:hover{background:var(--green-dark);}
+.save-btn:disabled{opacity:0.6;cursor:not-allowed;}
+/* PROFILE */
+.profile-avatar{width:80px;height:80px;border-radius:12px;background:var(--green-light);border:2px solid var(--green-mid);display:flex;align-items:center;justify-content:center;font-size:36px;margin-bottom:12px;overflow:hidden;}
+.profile-avatar img{width:100%;height:100%;object-fit:cover;}
+/* EMPTY */
+.empty{text-align:center;padding:3rem 1rem;color:var(--ink-faint);}
+.empty-icon{font-size:40px;margin-bottom:10px;}
+.empty-title{font-size:14px;font-weight:600;color:var(--ink-light);margin-bottom:6px;}
+.empty-sub{font-size:12px;}
+/* NOTICE */
+.notice{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;display:none;}
+.notice.err{background:var(--red-light);color:var(--red);}
+.notice.ok{background:var(--green-light);color:var(--green-dark);}
+/* MOBILE */
+@media(max-width:640px){
+  .field-row{grid-template-columns:1fr;}
+  .tab-btn{font-size:11px;padding:10px 4px;}
+  .portal-nav{padding:0 1rem;}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="screen active" id="screen-loading">
+  <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:12px;">
+    <div style="width:36px;height:36px;border:3px solid var(--green-light);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+    <div style="font-size:13px;color:var(--ink-faint);">Loading…</div>
+  </div>
+  <style>@keyframes spin{to{transform:rotate(360deg);}}</style>
+</div>
+
+<!-- AUTH -->
+<div class="screen" id="screen-auth">
+  <div class="auth-screen">
+    <div class="auth-box">
+      <div class="auth-header">
+        <div class="auth-logo">Petari<span>Link</span></div>
+        <div class="auth-sub">Farm Portal</div>
+      </div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchTab('login')">Sign in</button>
+        <button class="auth-tab" id="tab-register" onclick="switchTab('register')">Register farm</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div class="auth-body" id="body-login">
+        <div class="auth-err" id="login-err"></div>
+        <div class="auth-ok" id="login-ok"></div>
+        <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="farm@email.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <div class="field"><label>Password</label><input type="password" id="login-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+        <button class="btn-full" id="login-btn" onclick="doLogin()">Sign in →</button>
+        <div class="auth-link-row" style="margin-top:10px;">
+          <a onclick="forgotPassword()">Forgot password?</a>
+          &nbsp;·&nbsp;
+          <a onclick="resendConfirmation()">Resend confirmation</a>
+        </div>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="auth-body" id="body-register" style="display:none;">
+        <div class="auth-err" id="reg-err"></div>
+        <div class="auth-ok" id="reg-ok"></div>
+        <div class="field"><label>Farm name *</label><input type="text" id="reg-name" placeholder="e.g. Siam Reptile Ranch"></div>
+        <div class="field"><label>Location *</label><input type="text" id="reg-location" placeholder="e.g. Bangkok, Thailand"></div>
+        <div class="field"><label>Email *</label><input type="email" id="reg-email" placeholder="farm@email.com"></div>
+        <div class="field"><label>Phone / WhatsApp</label><input type="text" id="reg-phone" placeholder="+66 xx xxx xxxx"></div>
+        <div class="field"><label>Password * (min 6 chars)</label><input type="password" id="reg-pw" placeholder="••••••••"></div>
+        <div class="field"><label>Main species</label><input type="text" id="reg-species" placeholder="e.g. Ball pythons, Leopard geckos"></div>
+        <div class="field"><label>Export capable?</label>
+          <select id="reg-export"><option value="yes">Yes — worldwide export</option><option value="local">Local sales only</option></select>
+        </div>
+        <div class="field"><label>About your farm</label><textarea id="reg-about" placeholder="Tell buyers about your farm…"></textarea></div>
+        <button class="btn-full" id="reg-btn" onclick="doRegister()">Submit application →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PENDING -->
+<div class="screen" id="screen-pending">
+  <div class="status-screen">
+    <div class="status-box">
+      <div class="status-icon">⏳</div>
+      <div class="status-title">Application under review</div>
+      <div class="status-sub">Your farm registration has been submitted. The Petari Link team will review and approve your account within 24 hours.<br><br>Check back soon or contact us on WhatsApp: <strong>+66 81 412 0794</strong></div>
+      <button class="btn-full" style="margin-top:1.5rem;" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- REJECTED -->
+<div class="screen" id="screen-rejected">
+  <div class="status-screen">
+    <div class="status-box">
+      <div class="status-icon">❌</div>
+      <div class="status-title">Application not approved</div>
+      <div class="status-sub">Your farm registration was not approved at this time. Please contact us directly for more information.<br><br>WhatsApp: <strong>+66 81 412 0794</strong><br>Line: <strong>lohsomboon</strong></div>
+      <button class="btn-full" style="margin-top:1.5rem;" onclick="doLogout()">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="screen" id="screen-dashboard">
+  <!-- NAV -->
+  <nav class="portal-nav">
+    <a class="portal-nav-logo" href="index.html">Petari<span>Link</span></a>
+    <div class="portal-nav-right">
+      <span style="font-size:12px;color:var(--ink-faint);" id="nav-farm-name"></span>
+      <button class="nav-btn" onclick="doLogout()">Log out</button>
+      <a class="nav-btn" href="index.html">← Marketplace</a>
+    </div>
+  </nav>
+
+  <!-- TABS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab2('listings')">🐍 My listings</button>
+    <button class="tab-btn" onclick="switchTab2('add')">➕ Add listing</button>
+    <button class="tab-btn" onclick="switchTab2('profile')">🏡 Farm profile</button>
+  </div>
+
+  <!-- LISTINGS TAB -->
+  <div class="tab-content active" id="tab-listings">
+    <div class="stats-row" id="dash-stats"></div>
+    <div class="section-title">Active listings</div>
+    <div id="listings-active"></div>
+    <div class="expired-section" id="listings-expired-wrap" style="display:none;">
+      <div class="expired-title">⏰ Expired listings</div>
+      <div id="listings-expired"></div>
+    </div>
+  </div>
+
+  <!-- ADD LISTING TAB -->
+  <div class="tab-content" id="tab-add">
+    <div id="form-notice" class="notice"></div>
+
+    <!-- Animal icon -->
+    <div class="form-card">
+      <div class="form-card-title">Animal icon</div>
+      <div class="emoji-grid" id="emoji-grid">
+        <div class="emoji-opt selected" onclick="selectEmoji('🐍',this)">🐍</div>
+        <div class="emoji-opt" onclick="selectEmoji('🦎',this)">🦎</div>
+        <div class="emoji-opt" onclick="selectEmoji('🐢',this)">🐢</div>
+        <div class="emoji-opt" onclick="selectEmoji('🦕',this)">🦕</div>
+        <div class="emoji-opt" onclick="selectEmoji('🐊',this)">🐊</div>
+        <div class="emoji-opt" onclick="selectEmoji('🦖',this)">🦖</div>
+      </div>
+    </div>
+
+    <!-- Animal details -->
+    <div class="form-card">
+      <div class="form-card-title">Animal details</div>
+      <div class="field-row">
+        <div class="field"><label>Species *</label>
+          <select id="f-species" onchange="updateMorphTags()">
+            <option value="">Select species</option>
+            <option>Ball Python</option><option>Boa Constrictor</option>
+            <option>Leopard Gecko</option><option>Crested Gecko</option>
+            <option>Gargoyle Gecko</option><option>Day Gecko</option><option>Cave Gecko</option>
+            <option>Bearded Dragon</option><option>Northern Blue Tongue Skink</option>
+            <option>Iguana</option><option>Tegu</option>
+            <option>Monitor Lizard</option><option>Tortoise</option>
+            <option>Chameleon</option><option>Tree Python</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field"><label>Sex *</label>
+          <select id="f-sex">
+            <option value="">Select</option><option>Male</option><option>Female</option>
+            <option>Unsexed</option><option>Pair (1.1)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Scientific name</label><input type="text" id="f-scientific" placeholder="e.g. Pogona vitticeps"></div>
+        <div class="field"><label>Common name</label><input type="text" id="f-common" placeholder="e.g. Bearded Dragon"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Origin country</label><input type="text" id="f-origin" placeholder="e.g. Australia"></div>
+        <div class="field"><label>Date of birth</label><input type="text" id="f-dob" placeholder="e.g. 2023"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Weight (grams)</label><input type="number" id="f-weight" placeholder="e.g. 450"></div>
+        <div class="field"><label>Length (cm)</label><input type="number" id="f-length" placeholder="e.g. 35"></div>
+      </div>
+      <div class="field">
+        <label>Morph / genetics *</label>
+        <input type="text" id="f-morph" placeholder="Type or tap tags below…">
+        <div class="morph-tags" id="morph-tags-container"></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Diet</label><input type="text" id="f-diet" placeholder="e.g. Crickets, Vegetables"></div>
+        <div class="field"><label>Feeding status</label>
+          <select id="f-feeding">
+            <option value="">Select</option><option>Frozen/thawed</option>
+            <option>Live</option><option>Fresh killed</option><option>Not yet feeding</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Export</label>
+          <select id="f-export">
+            <option value="">Select</option>
+            <option value="Worldwide">Worldwide</option>
+            <option value="Asia only">Asia only</option>
+            <option value="No export">No export</option>
+          </select>
+        </div>
+        <div class="field"><label>Local pick up</label>
+          <select id="f-local-pickup">
+            <option value="">Select</option><option value="Yes">Yes</option><option value="No">No</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>CITES</label>
+          <select id="f-cites">
+            <option value="No">No</option><option value="CITES 1">CITES 1</option>
+            <option value="CITES 2">CITES 2</option><option value="CITES 3">CITES 3</option>
+          </select>
+        </div>
+        <div class="field"><label>Listing duration</label>
+          <select id="f-duration">
+            <option value="7">7 days — Quick sale</option>
+            <option value="14" selected>14 days — Standard</option>
+            <option value="30">30 days — Extended</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field"><label>Availability *</label>
+          <select id="f-status">
+            <option value="available">Available</option>
+            <option value="last">Last one</option>
+            <option value="sold">Sold</option>
+            <option value="hidden">Hidden (draft)</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Notes for buyer</label>
+        <textarea id="f-notes" placeholder="Temperament, lineage, parents, special traits…"></textarea>
+      </div>
+    </div>
+
+    <!-- Pricing -->
+    <div class="form-card">
+      <div class="form-card-title">Pricing</div>
+      <div class="field-row">
+        <div class="field"><label>Price (USD) *</label><input type="number" id="f-price" placeholder="e.g. 350"></div>
+        <div class="field"><label>Price note</label><input type="text" id="f-price-note" placeholder="e.g. + export costs"></div>
+      </div>
+    </div>
+
+    <!-- Photos -->
+    <div class="form-card">
+      <div class="form-card-title">Photos — up to 6</div>
+      <div class="photo-grid" id="photo-grid"></div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--green-dark);font-weight:600;cursor:pointer;">
+        <span>📁 Upload photos</span>
+        <input type="file" accept="image/*" multiple style="display:none;" onchange="handlePhotoUpload(this)">
+      </label>
+      <div style="font-size:11px;color:var(--ink-faint);margin-top:4px;">JPG or PNG · Max 5MB each · First photo = main listing image</div>
+    </div>
+
+    <button class="save-btn" id="save-btn" onclick="saveListing()">Save & submit →</button>
+    <div id="edit-cancel-row" style="display:none;margin-top:8px;text-align:center;">
+      <button class="btn" onclick="cancelEdit()">Cancel edit</button>
+    </div>
+  </div>
+
+  <!-- PROFILE TAB -->
+  <div class="tab-content" id="tab-profile">
+    <div class="form-card">
+      <div class="form-card-title">Farm profile</div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:1rem;">
+        <div class="profile-avatar" id="profile-avatar-preview">🐍</div>
+        <label style="font-size:12px;color:var(--green-dark);font-weight:600;cursor:pointer;">
+          Change logo
+          <input type="file" accept="image/*" style="display:none;" onchange="handleLogoUpload(this)">
+        </label>
+      </div>
+      <div class="field"><label>Farm name</label><input type="text" id="p-name" placeholder="Your farm name"></div>
+      <div class="field"><label>Location</label><input type="text" id="p-location" placeholder="City, Thailand"></div>
+      <div class="field"><label>Phone / WhatsApp</label><input type="text" id="p-phone" placeholder="+66 xx xxx xxxx"></div>
+      <div class="field"><label>Social / website</label><input type="text" id="p-social" placeholder="instagram.com/yourfarm"></div>
+      <div class="field"><label>Main species</label><input type="text" id="p-species" placeholder="e.g. Ball pythons, Geckos"></div>
+      <div class="field"><label>About your farm</label><textarea id="p-about" placeholder="Tell buyers about your farm…"></textarea></div>
+      <div class="field"><label>Export capable?</label>
+        <select id="p-export"><option value="yes">Yes — worldwide export</option><option value="local">Local sales only</option></select>
+      </div>
+      <button class="save-btn" onclick="saveProfile()">Save profile</button>
+      <div id="profile-notice" class="notice" style="margin-top:10px;"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://xywmqcvamrehxruubgle.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5d21xY3ZhbXJlaHhydXViZ2xlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTY0MDYsImV4cCI6MjA5NjA5MjQwNn0.ll5ekohkeGZoP61vbFqDBUABIxxvoyu0proMIQD7SLo';
+
+// Wait for Supabase to load
+let sb;
+function initSupabase(){
+  if(typeof supabase==='undefined'){
+    setTimeout(initSupabase,100);
+    return;
+  }
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  startApp();
+}
+
+const morphMap={'Ball Python':['Pastel','Banana','Clown','Pinstripe','Spider','Mojave','Lesser','Butter','Enchi','Fire','Yellow Belly','Genetic Stripe','Cinnamon','GHI','Mahogany','Sulphur'],'Boa Constrictor':['Albino','Hypo','Motley','Arabesque','Leopard','Sunglow'],'Leopard Gecko':['Tremper Albino','Bell Albino','Rainwater Albino','Blizzard','RAPTOR','Eclipse','Tangerine','Mack Snow','Super Snow'],'Crested Gecko':['Harlequin','Dalmatian','Pinstripe','Lily White','Tricolor','Flame','Tiger'],'Gargoyle Gecko':['Normal','Striped','Blotched','Reticulated','Red Striped','Orange Striped'],'Day Gecko':['Normal','Blue','Leucistic','Striped'],'Cave Gecko':['Normal','Striped','Albino'],'Bearded Dragon':['Het Albino','Het Dark Red','Het Zero','Het Trans','Het Witblit','Het Thunderbolt','Poss Het Zero Albino','Poss Het Witblit Albino','Poss Het Albino','Fancy','Red','Blue Bar','Leatherback','Dunner','Genetic Stripe','Trans','Yellow','Snow','SN (Pastel)','Albino','Dark Red','Zero','Witblit','Thunderbolt','Marble','UC','Ghost Yellow (G/Y)','Ghost Orange (G/O)','Super Blue (SB)','Phantom Red (PR)','Clown (CL)','Flame (FL)','Magma (M)','Coral (C)','Paradox (Para)','Het Paradox (HP)'],'Northern Blue Tongue Skink':['Normal','Albino','Caramel','Hypo','Melanistic'],'Iguana':['Green','Blue','Albino','Axanthic','Hypomelanistic'],'Tegu':['Black & White','Blue','Red','Purple','Albino','Platinum'],'Monitor Lizard':['Normal','Leucistic','Piebald','Albino'],'Tortoise':['Normal CB','High Yellow','Albino'],'Tree Python':['Normal','Sorong','Aru','Jayapura','Biak','Manokwari']};
+const typeMap={'Ball Python':'python','Boa Constrictor':'python','Tree Python':'python','Leopard Gecko':'gecko','Crested Gecko':'gecko','Gargoyle Gecko':'gecko','Day Gecko':'gecko','Cave Gecko':'gecko','Bearded Dragon':'lizard','Northern Blue Tongue Skink':'skink','Iguana':'iguana','Tegu':'tegu','Monitor Lizard':'monitor','Tortoise':'tortoise','Chameleon':'chameleon','Other':'other'};
+
+let currentFarm=null,farmPhotos=[],currentEmoji='🐍',editListingId=null;
+
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');}
+function showNotice(id,msg,type){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.className='notice '+(type||'ok');el.style.display=msg?'block':'none';}
+function setErr(id,msg){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.style.display=msg?'block':'none';}
+function setOk(id,msg){const el=document.getElementById(id);if(!el)return;el.textContent=msg;el.style.display=msg?'block':'none';}
+function clearErr(){['login-err','login-ok','reg-err','reg-ok'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});}
+
+// AUTH TABS
+function switchTab(t){
+  document.getElementById('tab-login').classList.toggle('active',t==='login');
+  document.getElementById('tab-register').classList.toggle('active',t==='register');
+  document.getElementById('body-login').style.display=t==='login'?'block':'none';
+  document.getElementById('body-register').style.display=t==='register'?'block':'none';
+  clearErr();
+}
+
+// LOGIN
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pw=document.getElementById('login-pw').value;
+  setErr('login-err','');setErr('login-ok','');
+  if(!email||!pw){setErr('login-err','Please enter your email and password.');return;}
+  const btn=document.getElementById('login-btn');
+  btn.textContent='Signing in…';btn.disabled=true;
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
+  btn.textContent='Sign in →';btn.disabled=false;
+  if(error){
+    if(error.message.toLowerCase().includes('confirm')){setErr('login-err','Please confirm your email first — check your inbox for a verification link.');}
+    else if(error.message.toLowerCase().includes('invalid')){setErr('login-err','Incorrect email or password.');}
+    else{setErr('login-err',error.message);}
+    return;
+  }
+  if(!data.session){setErr('login-err','Please confirm your email first — check your inbox.');return;}
+  await loadFarm(data.session.user.id);
+}
+
+// FORGOT PASSWORD
+async function forgotPassword(){
+  const email=document.getElementById('login-email').value.trim();
+  if(!email){setErr('login-err','Enter your email above first.');return;}
+  const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:window.location.href});
+  if(error)setErr('login-err',error.message);
+  else setOk('login-ok','✓ Password reset email sent to '+email);
+}
+
+// RESEND CONFIRMATION
+async function resendConfirmation(){
+  const email=document.getElementById('login-email').value.trim();
+  if(!email){setErr('login-err','Enter your email above first.');return;}
+  const {error}=await sb.auth.resend({type:'signup',email});
+  if(error)setErr('login-err',error.message);
+  else setOk('login-ok','✓ Confirmation email resent to '+email+'. Check your inbox and spam folder.');
+}
+
+// REGISTER
+async function doRegister(){
+  const name=document.getElementById('reg-name').value.trim();
+  const loc=document.getElementById('reg-location').value.trim();
+  const email=document.getElementById('reg-email').value.trim();
+  const pw=document.getElementById('reg-pw').value;
+  const phone=document.getElementById('reg-phone').value.trim();
+  const species=document.getElementById('reg-species').value.trim();
+  const exp=document.getElementById('reg-export').value;
+  const about=document.getElementById('reg-about').value.trim();
+  setErr('reg-err','');
+  if(!name||!loc||!email||!pw){setErr('reg-err','Please fill in all required fields.');return;}
+  if(pw.length<6){setErr('reg-err','Password must be at least 6 characters.');return;}
+  const btn=document.getElementById('reg-btn');btn.textContent='Submitting…';btn.disabled=true;
+  const {data,error}=await sb.auth.signUp({email,password:pw});
+  if(error){setErr('reg-err',error.message);btn.textContent='Submit application →';btn.disabled=false;return;}
+  await sb.from('farms').insert({user_id:data.user.id,name,location:loc,email,phone,species,export_capable:exp,about,status:'pending'});
+  btn.textContent='Submit application →';btn.disabled=false;
+  setOk('reg-ok','✓ Application submitted! Check your email for a confirmation link — click it, then sign in.');
+}
+
+// LOAD FARM
+async function loadFarm(userId){
+  const {data,error}=await sb.from('farms').select('*').eq('user_id',userId).single();
+  if(error){
+    if(error.code==='PGRST116')setErr('login-err','No farm account found for this email. Please register first.');
+    else setErr('login-err','Error loading farm: '+error.message);
+    show('screen-auth');return;
+  }
+  currentFarm=data;
+  if(data.status==='pending'){show('screen-pending');return;}
+  if(data.status==='rejected'){show('screen-rejected');return;}
+  document.getElementById('nav-farm-name').textContent=data.name||'';
+  show('screen-dashboard');
+  loadListings();
+}
+
+// LOGOUT
+async function doLogout(){await sb.auth.signOut();currentFarm=null;show('screen-auth');}
+
+// DASHBOARD TABS
+function switchTab2(t){
+  ['listings','add','profile'].forEach(x=>{
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+    const el=document.querySelector(`.tab-btn[onclick*="${x}"]`);
+    if(el)el.classList.toggle('active',x===t);
+  });
+  if(t==='listings')loadListings();
+  if(t==='profile')fillProfile();
+}
+
+// COUNTDOWN
+function getCountdown(expiresAt){
+  if(!expiresAt)return'';
+  const ms=new Date(expiresAt)-new Date();
+  if(ms<=0)return'<span class="countdown cd-red">Expired</span>';
+  const d=Math.floor(ms/86400000),h=Math.floor((ms%86400000)/3600000);
+  const cls=d>=4?'cd-green':d>=1?'cd-amber':'cd-red';
+  const label=d>0?d+'d '+h+'h left':h+'h left';
+  return`<span class="countdown ${cls}">⏱ ${label}</span>`;
+}
+
+// LOAD LISTINGS
+async function loadListings(){
+  const el=document.getElementById('listings-active');
+  const expEl=document.getElementById('listings-expired');
+  const expWrap=document.getElementById('listings-expired-wrap');
+  const statsEl=document.getElementById('dash-stats');
+  el.innerHTML='<div class="empty"><div class="empty-icon">⏳</div><div class="empty-sub">Loading…</div></div>';
+  const {data}=await sb.from('listings').select('*').eq('farm_id',currentFarm.id).order('created_at',{ascending:false});
+  const now=new Date();
+  const active=(data||[]).filter(l=>!l.expires_at||new Date(l.expires_at)>now);
+  const expired=(data||[]).filter(l=>l.expires_at&&new Date(l.expires_at)<=now);
+  // Stats
+  statsEl.innerHTML=`
+    <div class="stat-card"><div class="stat-num">${active.length}</div><div class="stat-label">Active</div></div>
+    <div class="stat-card"><div class="stat-num">${active.filter(l=>l.approval_status==='approved'&&l.status==='available').length}</div><div class="stat-label">Live now</div></div>
+    <div class="stat-card"><div class="stat-num">${active.filter(l=>l.approval_status==='pending').length}</div><div class="stat-label">Awaiting review</div></div>
+    <div class="stat-card"><div class="stat-num" style="${expired.length?'color:var(--red);':''}">${expired.length}</div><div class="stat-label">Expired</div></div>`;
+  // Active
+  if(active.length===0){el.innerHTML='<div class="empty"><div class="empty-icon">🐍</div><div class="empty-title">No listings yet</div><div class="empty-sub">Tap "Add listing" to create your first one</div></div>';}
+  else{el.innerHTML=active.map(l=>`
+    <div class="listing-row">
+      <div class="listing-row-emoji">${l.emoji||'🐍'}</div>
+      <div class="listing-row-info">
+        <div class="listing-row-title">${l.title}</div>
+        <div class="listing-row-sub">${(l.sub||'').split('·')[0].trim()} · <span class="pill pill-${l.approval_status||'pending'}">${l.approval_status||'pending'}</span> ${getCountdown(l.expires_at)}</div>
+      </div>
+      <div class="listing-row-price">${l.price||'—'}</div>
+      <div class="listing-row-actions">
+        <button class="btn sm" onclick="editListing('${l.id}')">✏</button>
+        <button class="btn sm danger" onclick="deleteListing('${l.id}')">✕</button>
+      </div>
+    </div>`).join('');}
+  // Expired
+  if(expired.length>0){
+    expWrap.style.display='block';
+    expEl.innerHTML=expired.map(l=>`
+      <div class="expired-row">
+        <div class="listing-row-emoji">${l.emoji||'🐍'}</div>
+        <div class="listing-row-info">
+          <div class="listing-row-title">${l.title}</div>
+          <div class="listing-row-sub" style="color:var(--red);">Expired ${new Date(l.expires_at).toLocaleDateString()}</div>
+        </div>
+        <div class="listing-row-actions">
+          <button class="btn sm primary" onclick="relistListing('${l.id}')">↺ Relist</button>
+          <button class="btn sm danger" onclick="deleteListing('${l.id}')">✕</button>
+        </div>
+      </div>`).join('');
+  }else{expWrap.style.display='none';}
+}
+
+// EMOJI
+function selectEmoji(e,el){currentEmoji=e;document.querySelectorAll('.emoji-opt').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');}
+
+// MORPH TAGS
+function updateMorphTags(){
+  const s=document.getElementById('f-species').value;
+  const c=document.getElementById('morph-tags-container');
+  c.innerHTML='';
+  const current=document.getElementById('f-morph').value.split(',').map(x=>x.trim()).filter(Boolean);
+  (morphMap[s]||[]).forEach(m=>{
+    const tag=document.createElement('span');
+    tag.className='morph-tag'+(current.includes(m)?' selected':'');
+    tag.textContent=m;
+    tag.onclick=()=>{
+      const inp=document.getElementById('f-morph');
+      const vals=inp.value.split(',').map(x=>x.trim()).filter(Boolean);
+      const idx=vals.indexOf(m);
+      if(idx>-1)vals.splice(idx,1);else vals.push(m);
+      inp.value=vals.join(', ');
+      tag.classList.toggle('selected',!tag.classList.contains('selected'));
+    };
+    c.appendChild(tag);
+  });
+}
+
+// PHOTOS
+function renderPhotoGrid(){
+  const g=document.getElementById('photo-grid');g.innerHTML='';
+  farmPhotos.forEach((src,i)=>{
+    const slot=document.createElement('div');slot.className='photo-slot';
+    slot.innerHTML=`<img src="${src}" alt="Photo ${i+1}"><button class="photo-slot-del" onclick="removePhoto(${i})">✕</button>${i===0?'<div style="position:absolute;bottom:4px;left:4px;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;">Main</div>':''}`;
+    g.appendChild(slot);
+  });
+  for(let i=farmPhotos.length;i<6;i++){
+    const slot=document.createElement('div');slot.className='photo-slot';
+    slot.innerHTML=`<div class="photo-slot-empty"><span style="font-size:20px;">📷</span><span>${i===0?'Add photo':''}</span></div>`;
+    g.appendChild(slot);
+  }
+}
+function handlePhotoUpload(input){
+  const files=Array.from(input.files);
+  const rem=6-farmPhotos.length;
+  files.slice(0,rem).forEach(f=>{
+    if(f.size>5*1024*1024){alert(f.name+' is over 5MB. Please use a smaller file.');return;}
+    const r=new FileReader();r.onload=e=>{farmPhotos.push(e.target.result);renderPhotoGrid();};r.readAsDataURL(f);
+  });
+  input.value='';
+}
+function removePhoto(i){farmPhotos.splice(i,1);renderPhotoGrid();}
+
+// SAVE LISTING
+async function saveListing(){
+  const species=document.getElementById('f-species').value;
+  const sex=document.getElementById('f-sex').value;
+  const morph=document.getElementById('f-morph').value.trim();
+  const price=document.getElementById('f-price').value;
+  showNotice('form-notice','','');
+  if(!species){showNotice('form-notice','Please select a species.','err');return;}
+  if(!sex){showNotice('form-notice','Please select sex.','err');return;}
+  if(!morph){showNotice('form-notice','Please enter morph / genetics.','err');return;}
+  if(!price){showNotice('form-notice','Please enter a price.','err');return;}
+  const w=document.getElementById('f-weight').value;
+  const sub=[species,sex,w?w+'g':''].filter(Boolean).join(' · ');
+  const days=parseInt(document.getElementById('f-duration').value)||14;
+  const expiresAt=editListingId?undefined:new Date(Date.now()+days*86400000).toISOString();
+  const btn=document.getElementById('save-btn');btn.textContent='Saving…';btn.disabled=true;
+  const payload={
+    farm_id:currentFarm.id,farm:currentFarm.name,
+    title:morph,sub,emoji:currentEmoji,
+    price:'$'+parseInt(price).toLocaleString(),
+    sex:sex.toLowerCase(),type:typeMap[species]||'other',
+    status:document.getElementById('f-status').value,
+    notes:document.getElementById('f-notes').value,
+    photos:farmPhotos,
+    scientific_name:document.getElementById('f-scientific').value,
+    common_name:document.getElementById('f-common').value,
+    origin_country:document.getElementById('f-origin').value,
+    length_cm:document.getElementById('f-length').value||null,
+    diet:document.getElementById('f-diet').value,
+    export_destination:document.getElementById('f-export').value,
+    local_pickup:document.getElementById('f-local-pickup').value,
+    cites:document.getElementById('f-cites').value,
+    listing_days:days,
+    ...(expiresAt&&{expires_at:expiresAt}),
+    ...(editListingId?{}:{approval_status:'pending'}),
+  };
+  let error;
+  if(editListingId){({error}=await sb.from('listings').update(payload).eq('id',editListingId));}
+  else{({error}=await sb.from('listings').insert(payload));}
+  btn.textContent='Save & submit →';btn.disabled=false;
+  if(error){showNotice('form-notice','Error saving: '+error.message,'err');return;}
+  showNotice('form-notice',editListingId?'✓ Listing updated!':'✓ Listing submitted for review!','ok');
+  resetForm();
+  setTimeout(()=>switchTab2('listings'),1500);
+}
+
+function resetForm(){
+  ['f-species','f-sex','f-weight','f-dob','f-morph','f-price','f-price-note','f-notes','f-feeding','f-scientific','f-common','f-origin','f-length','f-diet','f-export','f-local-pickup'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-cites').value='No';
+  document.getElementById('f-status').value='available';
+  document.getElementById('f-duration').value='14';
+  farmPhotos=[];renderPhotoGrid();
+  document.querySelectorAll('.emoji-opt').forEach(o=>o.classList.remove('selected'));
+  document.querySelector('.emoji-opt').classList.add('selected');
+  currentEmoji='🐍';editListingId=null;
+  document.getElementById('morph-tags-container').innerHTML='';
+  document.getElementById('edit-cancel-row').style.display='none';
+  document.getElementById('save-btn').textContent='Save & submit →';
+  showNotice('form-notice','','');
+}
+
+// EDIT LISTING
+async function editListing(id){
+  const {data:l}=await sb.from('listings').select('*').eq('id',id).single();
+  if(!l)return;
+  editListingId=id;
+  document.getElementById('f-species').value=l.sub?.split('·')[0].trim()||'';
+  document.getElementById('f-sex').value=l.sex||'';
+  document.getElementById('f-morph').value=l.title||'';
+  document.getElementById('f-weight').value='';
+  document.getElementById('f-price').value=(l.price||'').replace(/[$,]/g,'');
+  document.getElementById('f-notes').value=l.notes||'';
+  document.getElementById('f-status').value=l.status||'available';
+  document.getElementById('f-scientific').value=l.scientific_name||'';
+  document.getElementById('f-common').value=l.common_name||'';
+  document.getElementById('f-origin').value=l.origin_country||'';
+  document.getElementById('f-length').value=l.length_cm||'';
+  document.getElementById('f-diet').value=l.diet||'';
+  document.getElementById('f-export').value=l.export_destination||'';
+  document.getElementById('f-local-pickup').value=l.local_pickup||'';
+  document.getElementById('f-cites').value=l.cites||'No';
+  farmPhotos=l.photos||[];renderPhotoGrid();
+  updateMorphTags();
+  document.getElementById('edit-cancel-row').style.display='block';
+  document.getElementById('save-btn').textContent='Update listing →';
+  switchTab2('add');window.scrollTo({top:0,behavior:'smooth'});
+}
+function cancelEdit(){resetForm();switchTab2('listings');}
+
+// DELETE
+async function deleteListing(id){
+  if(!confirm('Delete this listing?'))return;
+  await sb.from('listings').delete().eq('id',id);
+  loadListings();
+}
+
+// RELIST
+async function relistListing(id){
+  const d=prompt('Relist for how many days? Enter 7, 14, or 30','14');
+  const days=parseInt(d);
+  if(!days||![7,14,30].includes(days)){alert('Please enter 7, 14, or 30.');return;}
+  await sb.from('listings').update({expires_at:new Date(Date.now()+days*86400000).toISOString(),listing_days:days,status:'available',approval_status:'pending'}).eq('id',id);
+  loadListings();
+}
+
+// PROFILE
+function fillProfile(){
+  if(!currentFarm)return;
+  document.getElementById('p-name').value=currentFarm.name||'';
+  document.getElementById('p-location').value=currentFarm.location||'';
+  document.getElementById('p-phone').value=currentFarm.phone||'';
+  document.getElementById('p-social').value=currentFarm.social||'';
+  document.getElementById('p-species').value=currentFarm.species||'';
+  document.getElementById('p-about').value=currentFarm.about||'';
+  document.getElementById('p-export').value=currentFarm.export_capable||'yes';
+  if(currentFarm.logo){const av=document.getElementById('profile-avatar-preview');av.innerHTML=`<img src="${currentFarm.logo}" alt="Logo">`;}
+}
+async function saveProfile(){
+  const updates={name:document.getElementById('p-name').value,location:document.getElementById('p-location').value,phone:document.getElementById('p-phone').value,social:document.getElementById('p-social').value,species:document.getElementById('p-species').value,about:document.getElementById('p-about').value,export_capable:document.getElementById('p-export').value};
+  const {error}=await sb.from('farms').update(updates).eq('id',currentFarm.id);
+  if(error){showNotice('profile-notice','Error: '+error.message,'err');}
+  else{Object.assign(currentFarm,updates);document.getElementById('nav-farm-name').textContent=currentFarm.name||'';showNotice('profile-notice','✓ Profile saved!','ok');}
+}
+function handleLogoUpload(input){
+  const f=input.files[0];if(!f)return;
+  if(f.size>2*1024*1024){alert('Logo must be under 2MB.');return;}
+  const r=new FileReader();r.onload=async e=>{
+    const av=document.getElementById('profile-avatar-preview');av.innerHTML=`<img src="${e.target.result}" alt="Logo">`;
+    await sb.from('farms').update({logo:e.target.result}).eq('id',currentFarm.id);
+    currentFarm.logo=e.target.result;
+  };r.readAsDataURL(f);
+}
+
+// START
+async function startApp(){
+  // Safety timeout
+  const t=setTimeout(()=>{show('screen-auth');},5000);
+  try{
+    const {data,error}=await sb.auth.getSession();
+    clearTimeout(t);
+    if(error||!data.session){show('screen-auth');return;}
+    await loadFarm(data.session.user.id);
+  }catch(e){clearTimeout(t);show('screen-auth');}
+}
+
+// Init photo grid on load
+document.addEventListener('DOMContentLoaded',()=>{
+  renderPhotoGrid();
+  initSupabase();
+});
+</script>
+</body>
+</html>
