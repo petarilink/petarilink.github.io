@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Petari Link</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --green:#1D9E75;--green-dark:#0F6E56;--green-light:#E1F5EE;--green-mid:#9FE1CB;--green-deep:#085041;
+  --ink:#111410;--ink-mid:#3A3D38;--ink-light:#7A7D78;--ink-faint:#A8ABA6;
+  --cream:#F8F6F0;--cream-dark:#EEE9DF;--white:#FFFFFF;
+  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.13);
+  --red:#A32D2D;--red-light:#FCEBEB;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --purple:#534AB7;--purple-light:#EEEDFE;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);font-size:14px;}
+/* SCREENS */
+.screen{display:none !important;}
+.screen.active{display:block !important;}
+#screen-loading.active{display:flex !important;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.spinner{width:32px;height:32px;border:3px solid var(--green-light);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite;}
+/* LOGIN */
+#screen-login.active{display:flex !important;align-items:center;justify-content:center;min-height:100vh;padding:2rem 1rem;background:var(--cream);}
+.login-card{background:var(--white);border:1px solid var(--border2);border-radius:14px;width:100%;max-width:380px;padding:2rem;}
+.login-logo{font-family:'Outfit',sans-serif;font-size:24px;font-weight:800;color:var(--ink);letter-spacing:-0.5px;margin-bottom:4px;}
+.login-logo span{color:var(--green);}
+.login-sub{font-size:13px;color:var(--ink-light);margin-bottom:1.5rem;}
+.field{margin-bottom:12px;}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--ink-light);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;}
+.field input{width:100%;padding:9px 12px;border:1px solid var(--border2);border-radius:7px;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--ink);outline:none;transition:border-color 0.15s;}
+.field input:focus{border-color:var(--green-mid);}
+.btn-full{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s;}
+.btn-full:hover{background:var(--green-dark);}
+.btn-full:disabled{opacity:0.6;cursor:not-allowed;}
+.err-msg{display:none;background:var(--red-light);color:var(--red);border-radius:7px;padding:8px 12px;font-size:12px;margin-bottom:10px;}
+/* DASHBOARD LAYOUT */
+#screen-dashboard.active{display:flex !important;flex-direction:column;min-height:100vh;}
+.adm-nav{height:56px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;position:sticky;top:0;z-index:100;}
+.adm-nav-logo{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;color:var(--ink);letter-spacing:-0.5px;}
+.adm-nav-logo span{color:var(--green);}
+.adm-nav-right{display:flex;align-items:center;gap:8px;}
+.adm-nav-btn{font-size:12px;font-weight:600;padding:6px 12px;border-radius:6px;cursor:pointer;border:1px solid var(--border2);background:var(--white);color:var(--ink-light);text-decoration:none;transition:all 0.15s;font-family:'DM Sans',sans-serif;}
+.adm-nav-btn:hover{border-color:var(--green-mid);color:var(--green-dark);}
+/* TAB BAR */
+.adm-tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;position:sticky;top:56px;z-index:99;}
+.adm-tabs::-webkit-scrollbar{display:none;}
+.adm-tab{flex-shrink:0;padding:12px 16px;font-size:13px;font-weight:600;cursor:pointer;border:none;background:none;color:var(--ink-light);border-bottom:2px solid transparent;transition:all 0.15s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.adm-tab:hover{color:var(--ink);}
+.adm-tab.active{color:var(--green-dark);border-bottom-color:var(--green);}
+.adm-tab .badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;background:var(--amber-light);color:var(--amber);font-size:10px;font-weight:700;border-radius:999px;margin-left:5px;}
+.adm-tab.active .badge{background:var(--green-light);color:var(--green-dark);}
+/* PANELS */
+.adm-panel{display:none;padding:1.25rem 1.5rem;flex:1;}
+.adm-panel.active{display:block;}
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem;}
+.stat-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;}
+.stat-num{font-family:'Outfit',sans-serif;font-size:26px;font-weight:700;color:var(--green);margin-bottom:2px;}
+.stat-label{font-size:11px;color:var(--ink-light);}
+/* TABLES */
+.table-card{background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:1.25rem;}
+.table-header{padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:space-between;}
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+th{padding:10px 14px;text-align:left;font-size:11px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.5px;background:var(--cream);border-bottom:1px solid var(--border);white-space:nowrap;}
+td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:13px;color:var(--ink-mid);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(0,0,0,0.01);}
+/* PILLS */
+.pill{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:0.3px;white-space:nowrap;}
+.pill-approved,.pill-active{background:var(--green-light);color:var(--green-dark);}
+.pill-pending{background:var(--amber-light);color:var(--amber);}
+.pill-rejected,.pill-suspended{background:var(--red-light);color:var(--red);}
+.pill-sold{background:#EDEDE8;color:var(--ink-faint);}
+.pill-available{background:var(--green-light);color:var(--green-dark);}
+.pill-hidden{background:#EDEDE8;color:var(--ink-faint);}
+.pill-export{background:var(--green-light);color:var(--green-dark);}
+.pill-local{background:#EDEDE8;color:var(--ink-faint);}
+/* ACTION BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:4px;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:600;cursor:pointer;border:1px solid var(--border2);background:var(--white);color:var(--ink-mid);transition:all 0.15s;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+.btn:hover{border-color:var(--green-mid);color:var(--green-dark);}
+.btn-approve{background:var(--green-light);color:var(--green-dark);border-color:var(--green-mid);}
+.btn-approve:hover{background:var(--green);color:#fff;}
+.btn-reject{background:var(--red-light);color:var(--red);border-color:rgba(160,45,45,0.2);}
+.btn-reject:hover{background:var(--red);color:#fff;}
+.btn-delete{color:var(--red);}
+.btn-delete:hover{background:var(--red-light);border-color:rgba(160,45,45,0.2);}
+.btn-photos{background:var(--purple-light);color:var(--purple);border-color:rgba(83,74,183,0.2);}
+.btn-actions{display:flex;gap:5px;flex-wrap:wrap;}
+/* FARM DETAIL CARD */
+.farm-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.25rem;margin-bottom:10px;}
+.farm-card-name{font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+.farm-card-meta{font-size:12px;color:var(--ink-light);margin-bottom:10px;display:flex;flex-wrap:wrap;gap:8px;}
+.farm-card-meta span{display:flex;align-items:center;gap:4px;}
+.farm-card-about{font-size:13px;color:var(--ink-mid);line-height:1.6;margin-bottom:12px;background:var(--cream);border-radius:7px;padding:10px 12px;}
+/* EMPTY */
+.empty{text-align:center;padding:3rem;color:var(--ink-faint);}
+.empty-icon{font-size:36px;margin-bottom:10px;}
+/* PHOTO MODAL */
+.modal-backdrop{display:none;position:fixed;inset:0;z-index:500;background:rgba(17,20,16,0.55);align-items:center;justify-content:center;padding:1.5rem;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--white);border-radius:14px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;}
+.modal-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--white);}
+.modal-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:700;color:var(--ink);}
+.modal-close{width:30px;height:30px;border-radius:50%;border:1px solid var(--border2);background:var(--cream);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--ink-light);}
+.modal-close:hover{background:var(--red-light);color:var(--red);}
+.modal-body{padding:1.25rem;}
+.photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.photo-slot{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border2);aspect-ratio:1;display:flex;align-items:center;justify-content:center;background:var(--cream);}
+.photo-slot img{width:100%;height:100%;object-fit:cover;}
+.photo-del{position:absolute;top:4px;right:4px;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,0.6);color:#fff;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;}
+.photo-del:hover{background:var(--red);}
+.photo-main-badge{position:absolute;bottom:4px;left:4px;background:var(--green);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;text-transform:uppercase;}
+.upload-zone{border:2px dashed var(--border2);border-radius:10px;padding:1.25rem;text-align:center;cursor:pointer;transition:border-color 0.15s;margin-bottom:10px;}
+.upload-zone:hover{border-color:var(--green-mid);}
+.url-row{display:flex;gap:8px;margin-bottom:10px;}
+.url-row input{flex:1;padding:8px 12px;border:1px solid var(--border2);border-radius:7px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;}
+.url-row input:focus{border-color:var(--green-mid);}
+.modal-footer{padding:1rem 1.25rem;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;position:sticky;bottom:0;background:var(--white);}
+.modal-note{font-size:11px;color:var(--ink-faint);}
+.notice{padding:9px 12px;border-radius:7px;font-size:12px;font-weight:500;display:none;margin-top:8px;}
+.notice.ok{background:var(--green-light);color:var(--green-dark);display:block;}
+.notice.err{background:var(--red-light);color:var(--red);display:block;}
+/* MOBILE */
+@media(max-width:640px){
+  .stats-row{grid-template-columns:repeat(2,1fr);}
+  .adm-panel{padding:1rem;}
+  .adm-nav{padding:0 1rem;}
+  th:nth-child(n+4),td:nth-child(n+4){display:none;}
+}
+/* BANNER DRAG ITEMS */
+.banner-item{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:8px;margin-bottom:4px;background:var(--white);border:1px solid var(--border);transition:box-shadow .15s,border-color .15s;user-select:none;}
+.banner-item:hover{border-color:var(--green-mid);}
+.banner-item.dragging{opacity:.45;box-shadow:0 4px 16px rgba(0,0,0,.15);border-color:var(--green);}
+.banner-item.drag-over{border-top:2px solid var(--green);background:var(--green-light);}
+.banner-drag-handle{font-size:20px;color:var(--ink-faint);cursor:grab;flex-shrink:0;padding:0 4px;line-height:1;touch-action:none;}
+.banner-drag-handle:active{cursor:grabbing;}
+.banner-item-logo{width:38px;height:38px;border-radius:7px;background:var(--cream-dark);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;overflow:hidden;}
+.banner-item-logo img{width:100%;height:100%;object-fit:cover;border-radius:6px;}
+.banner-item-info{flex:1;min-width:0;}
+.banner-item-name{font-size:13px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.banner-item-sub{font-size:11px;color:var(--ink-faint);}
+.banner-item-pos{font-size:12px;font-weight:800;color:var(--ink-faint);width:22px;text-align:center;flex-shrink:0;font-family:'Outfit',sans-serif;}
+.toggle-wrap{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.toggle-lbl{font-size:9px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em;}
+.toggle{position:relative;width:38px;height:22px;flex-shrink:0;}
+.toggle input{opacity:0;width:0;height:0;position:absolute;}
+.toggle-slider{position:absolute;inset:0;background:#ddd;border-radius:20px;cursor:pointer;transition:.2s;}
+.toggle-slider:before{content:'';position:absolute;width:16px;height:16px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.toggle input:checked+.toggle-slider{background:var(--green);}
+.toggle input:checked+.toggle-slider:before{transform:translateX(16px);}
+.preview-pill{display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--cream);border:1px solid var(--border);border-radius:8px;flex-shrink:0;font-size:12px;font-weight:600;color:var(--ink-mid);white-space:nowrap;}
+.preview-pill-logo{width:20px;height:20px;border-radius:4px;background:var(--cream-dark);display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;flex-shrink:0;}
+.preview-pill-logo img{width:100%;height:100%;object-fit:cover;border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="screen active" id="screen-loading">
+  <div class="spinner"></div>
+  <div style="font-size:13px;color:var(--ink-faint);margin-top:10px;">Loading…</div>
+</div>
+
+<!-- LOGIN -->
+<div class="screen" id="screen-login">
+  <div class="login-card">
+    <div class="login-logo">Petari<span>Link</span></div>
+    <div class="login-sub">Admin access only</div>
+    <div class="err-msg" id="login-err"></div>
+    <div class="field"><label>Email</label><input type="email" id="login-email" placeholder="admin@petarilink.com" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <div class="field"><label>Password</label><input type="password" id="login-pw" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="btn-full" id="login-btn" onclick="doLogin()">Sign in →</button>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="screen" id="screen-dashboard">
+  <nav class="adm-nav">
+    <div class="adm-nav-logo">Petari<span>Link</span> <span style="font-size:11px;font-weight:600;color:var(--ink-faint);background:var(--cream);padding:2px 8px;border-radius:4px;margin-left:6px;">Admin</span></div>
+    <div class="adm-nav-right">
+      <a class="adm-nav-btn" href="index.html">← Marketplace</a>
+      <button class="adm-nav-btn" onclick="doLogout()">Log out</button>
+    </div>
+  </nav>
+
+  <div class="adm-tabs" id="adm-tabs">
+    <button class="adm-tab active" onclick="showTab('overview',this)">📊 Overview</button>
+    <button class="adm-tab" onclick="showTab('pending-farms',this)">⏳ Pending farms <span class="badge" id="badge-pending-farms">0</span></button>
+    <button class="adm-tab" onclick="showTab('all-farms',this)">🏡 All farms</button>
+    <button class="adm-tab" onclick="showTab('banner-control',this)">🎯 Partner banner</button>
+    <button class="adm-tab" onclick="showTab('pending-listings',this)">📋 Awaiting review <span class="badge" id="badge-pending-listings">0</span></button>
+    <button class="adm-tab" onclick="showTab('all-listings',this)">🐍 All listings</button>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="adm-panel active" id="panel-overview">
+    <div class="stats-row" id="overview-stats">
+      <div class="stat-card"><div class="stat-num" id="s-farms">—</div><div class="stat-label">Total farms</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-listings">—</div><div class="stat-label">Total listings</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-live">—</div><div class="stat-label">Live now</div></div>
+      <div class="stat-card"><div class="stat-num" id="s-pending">—</div><div class="stat-label">Pending review</div></div>
+    </div>
+    <div class="table-card">
+      <div class="table-header">⏳ Farms awaiting approval</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Farm</th><th>Location</th><th>Submitted</th><th>Actions</th></tr></thead>
+        <tbody id="overview-farms-tbody"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+      </table></div>
+    </div>
+    <div class="table-card">
+      <div class="table-header">📋 Listings awaiting review</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Animal</th><th>Farm</th><th>Price</th><th>Actions</th></tr></thead>
+        <tbody id="overview-listings-tbody"><tr><td colspan="4" class="empty">Loading…</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- PENDING FARMS -->
+  <div class="adm-panel" id="panel-pending-farms">
+    <div id="pending-farms-content"><div class="empty"><div class="empty-icon">⏳</div>Loading…</div></div>
+  </div>
+
+  <!-- ALL FARMS -->
+  <div class="adm-panel" id="panel-all-farms">
+    <div class="table-card">
+      <div class="table-header">All farms</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Farm</th><th>Location</th><th>Export</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="all-farms-tbody"><tr><td colspan="5" class="empty">Loading…</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- PARTNER BANNER CONTROL -->
+  <div class="adm-panel" id="panel-banner-control">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+      <div>
+        <div style="font-family:'Outfit',sans-serif;font-size:18px;font-weight:800;color:var(--ink);">🎯 Partner Farms Banner</div>
+        <div style="font-size:12px;color:var(--ink-light);margin-top:2px;">Drag to reorder · toggle on/off · changes save instantly to the homepage marquee</div>
+      </div>
+      <button class="btn btn-approve" onclick="saveBannerOrder()" id="banner-save-btn" style="padding:8px 18px;font-size:13px;">💾 Save order</button>
+    </div>
+
+    <!-- LIVE PREVIEW -->
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;">
+      <div style="font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:8px;">Live preview — homepage banner</div>
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;" id="banner-preview"></div>
+    </div>
+
+    <!-- NOTICE -->
+    <div id="banner-notice" style="display:none;padding:9px 12px;border-radius:7px;font-size:12px;font-weight:600;margin-bottom:12px;"></div>
+
+    <!-- DRAG LIST -->
+    <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:700;color:var(--ink);display:flex;align-items:center;justify-content:space-between;">
+        <span>Approved farms</span>
+        <span style="font-size:11px;color:var(--ink-faint)" id="banner-count"></span>
+      </div>
+      <div id="banner-drag-list" style="padding:8px 12px;min-height:60px;"></div>
+    </div>
+
+    <div style="margin-top:14px;padding:12px 14px;background:var(--cream);border-radius:8px;font-size:12px;color:var(--ink-light);line-height:1.6;">
+      <strong>How it works:</strong><br>
+      • Only <strong>approved</strong> farms appear here<br>
+      • Toggle the switch to show/hide a farm in the banner<br>
+      • Drag the <strong>⠿</strong> handle to reorder<br>
+      • Click <strong>Save order</strong> — updates the homepage instantly
+    </div>
+  </div>
+
+  <!-- PENDING LISTINGS -->
+  <div class="adm-panel" id="panel-pending-listings">
+    <div id="pending-listings-content"><div class="empty"><div class="empty-icon">📋</div>Loading…</div></div>
+  </div>
+
+  <!-- ALL LISTINGS -->
+  <div class="adm-panel" id="panel-all-listings">
+    <div class="table-card">
+      <div class="table-header">All listings</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Animal</th><th>Farm</th><th>Price</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="all-listings-tbody"><tr><td colspan="6" class="empty">Loading…</td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+</div>
+
+<!-- PHOTO EDITOR MODAL -->
+<div class="modal-backdrop" id="photo-modal" onclick="closePhotoModal()">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title">📷 Edit photos — <span id="photo-modal-name"></span></div>
+      <button class="modal-close" onclick="closePhotoModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size:11px;font-weight:700;color:var(--ink-faint);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">Current photos <span id="photo-count"></span></div>
+      <div class="photo-grid" id="photo-grid"></div>
+      <div class="upload-zone" onclick="document.getElementById('photo-file-input').click()">
+        <div style="font-size:22px;margin-bottom:6px;">📁</div>
+        <div style="font-size:13px;font-weight:600;color:var(--ink-mid);">Click to upload photos</div>
+        <div style="font-size:11px;color:var(--ink-faint);">JPG or PNG · Max 5MB · Up to 6 total</div>
+        <input type="file" id="photo-file-input" accept="image/*" multiple style="display:none;" onchange="handlePhotoUpload(this)">
+      </div>
+      <div class="url-row">
+        <input type="text" id="photo-url-input" placeholder="Or paste image URL here…">
+        <button class="btn" onclick="addPhotoUrl()" style="padding:8px 14px;">Add</button>
+      </div>
+      <div class="notice" id="photo-notice"></div>
+    </div>
+    <div class="modal-footer">
+      <span class="modal-note">Drag to reorder · First photo = main image</span>
+      <div style="display:flex;gap:8px;">
+        <button class="btn" onclick="closePhotoModal()">Cancel</button>
+        <button class="btn btn-approve" onclick="savePhotos()" id="photo-save-btn" style="padding:8px 16px;">Save photos →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SUPABASE_URL='https://xywmqcvamrehxruubgle.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5d21xY3ZhbXJlaHhydXViZ2xlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MTY0MDYsImV4cCI6MjA5NjA5MjQwNn0.ll5ekohkeGZoP61vbFqDBUABIxxvoyu0proMIQD7SLo';
+const ADMIN_EMAIL='petarilink@gmail.com';
+
+let sb;
+function initSupabase(){
+  if(typeof supabase==='undefined'){setTimeout(initSupabase,100);return;}
+  sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+  startApp();
+}
+
+// ── UTILS ──
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('active');
+  });
+  const el=document.getElementById(id);
+  if(el)el.classList.add('active');
+}
+function fmt(d){return d?new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'—';}
+function setErr(id,msg){const el=document.getElementById(id);if(el){el.textContent=msg;el.style.display=msg?'block':'none';}}
+function expiryBadge(exp){
+  if(!exp)return'<span style="color:var(--ink-faint);font-size:11px;">—</span>';
+  const ms=new Date(exp)-new Date();
+  if(ms<=0)return'<span class="pill pill-rejected">Expired</span>';
+  const d=Math.floor(ms/86400000);
+  if(d>=4)return`<span class="pill pill-approved">🟢 ${d}d</span>`;
+  if(d>=1)return`<span class="pill pill-pending">🟡 ${d}d</span>`;
+  return'<span class="pill pill-rejected">🔴 Today</span>';
+}
+
+// ── AUTH ──
+async function doLogin(){
+  const email=document.getElementById('login-email').value.trim();
+  const pw=document.getElementById('login-pw').value;
+  setErr('login-err','');
+  if(!email||!pw){setErr('login-err','Please enter your email and password.');return;}
+  const btn=document.getElementById('login-btn');btn.textContent='Signing in…';btn.disabled=true;
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pw});
+  btn.textContent='Sign in →';btn.disabled=false;
+  if(error){setErr('login-err',error.message);return;}
+  if(data.session.user.email!==ADMIN_EMAIL){await sb.auth.signOut();setErr('login-err','This account does not have admin access.');return;}
+  launchDashboard();
+}
+async function doLogout(){await sb.auth.signOut();show('screen-login');}
+
+// ── TABS ──
+function showTab(id,btn){
+  document.querySelectorAll('.adm-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.adm-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  loadTab(id);
+}
+async function loadTab(id){
+  if(id==='overview')return loadOverview();
+  if(id==='pending-farms')return loadPendingFarms();
+  if(id==='all-farms')return loadAllFarms();
+  if(id==='banner-control')return loadBannerControl();
+  if(id==='pending-listings')return loadPendingListings();
+  if(id==='all-listings')return loadAllListings();
+}
+
+// ── OVERVIEW ──
+async function loadOverview(){
+  const [{data:farms},{data:listings}]=await Promise.all([
+    sb.from('farms').select('id,status'),
+    sb.from('listings').select('id,status,approval_status'),
+  ]);
+  const pf=(farms||[]).filter(f=>f.status==='pending');
+  const pl=(listings||[]).filter(l=>l.approval_status==='pending');
+  document.getElementById('s-farms').textContent=(farms||[]).length;
+  document.getElementById('s-listings').textContent=(listings||[]).length;
+  document.getElementById('s-live').textContent=(listings||[]).filter(l=>l.approval_status==='approved'&&l.status==='available').length;
+  document.getElementById('s-pending').textContent=pl.length;
+  document.getElementById('badge-pending-farms').textContent=pf.length;
+  document.getElementById('badge-pending-listings').textContent=pl.length;
+  // Pending farms table
+  const {data:pFarms}=await sb.from('farms').select('*').eq('status','pending').order('created_at',{ascending:false});
+  document.getElementById('overview-farms-tbody').innerHTML=(pFarms||[]).length===0
+    ?'<tr><td colspan="4" class="empty">No pending farms</td></tr>'
+    :(pFarms||[]).map(f=>`<tr>
+      <td><strong>${f.name||'—'}</strong></td>
+      <td style="color:var(--ink-faint);">${f.location||'—'}</td>
+      <td style="color:var(--ink-faint);">${fmt(f.created_at)}</td>
+      <td><div class="btn-actions">
+        <button class="btn btn-approve" onclick="approveFarm('${f.id}')">✓ Approve</button>
+        <button class="btn btn-reject" onclick="rejectFarm('${f.id}')">✕ Reject</button>
+      </div></td>
+    </tr>`).join('');
+  // Pending listings table
+  const {data:pListings}=await sb.from('listings').select('*').eq('approval_status','pending').order('created_at',{ascending:false});
+  document.getElementById('overview-listings-tbody').innerHTML=(pListings||[]).length===0
+    ?'<tr><td colspan="4" class="empty">No listings awaiting review</td></tr>'
+    :(pListings||[]).map(l=>`<tr>
+      <td><span style="font-size:15px;">${l.emoji||'🐍'}</span> <strong>${l.title||'—'}</strong></td>
+      <td style="color:var(--ink-faint);">${l.farm||'—'}</td>
+      <td style="font-weight:600;color:var(--green-dark);">${l.price||'—'}</td>
+      <td><div class="btn-actions">
+        <button class="btn btn-approve" onclick="approveListing('${l.id}')">✓ Approve</button>
+        <button class="btn btn-reject" onclick="rejectListing('${l.id}')">✕ Reject</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+// ── PENDING FARMS ──
+async function loadPendingFarms(){
+  const {data}=await sb.from('farms').select('*').eq('status','pending').order('created_at',{ascending:false});
+  const c=document.getElementById('pending-farms-content');
+  if(!data||data.length===0){c.innerHTML='<div class="empty"><div class="empty-icon">✅</div><div>No pending farm applications</div></div>';return;}
+  c.innerHTML=data.map(f=>`
+    <div class="farm-card">
+      <div class="farm-card-name">${f.name||'Unnamed farm'}</div>
+      <div class="farm-card-meta">
+        <span>📍 ${f.location||'—'}</span>
+        <span>📧 ${f.email||'—'}</span>
+        <span>📞 ${f.phone||'—'}</span>
+        <span>✈ ${f.export_capable==='yes'?'Export capable':'Local only'}</span>
+        <span>🐍 ${f.species||'—'}</span>
+        <span>📅 ${fmt(f.created_at)}</span>
+      </div>
+      ${f.about?`<div class="farm-card-about">${f.about}</div>`:''}
+      <div class="btn-actions">
+        <button class="btn btn-approve" onclick="approveFarm('${f.id}')">✓ Approve farm</button>
+        <button class="btn btn-reject" onclick="rejectFarm('${f.id}')">✕ Reject</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── ALL FARMS ──
+async function loadAllFarms(){
+  const {data}=await sb.from('farms').select('*').order('created_at',{ascending:false});
+  document.getElementById('all-farms-tbody').innerHTML=!(data&&data.length)
+    ?'<tr><td colspan="5" class="empty">No farms yet</td></tr>'
+    :data.map(f=>`<tr>
+      <td><strong>${f.name||'—'}</strong><div style="font-size:11px;color:var(--ink-faint);">${f.email||''}</div></td>
+      <td style="color:var(--ink-faint);">${f.location||'—'}</td>
+      <td><span class="pill pill-${f.export_capable==='yes'?'export':'local'}">${f.export_capable==='yes'?'✈ Export':'Local'}</span></td>
+      <td><span class="pill pill-${f.status||'pending'}">${f.status||'pending'}</span></td>
+      <td><div class="btn-actions">
+        ${f.status==='pending'?`<button class="btn btn-approve" onclick="approveFarm('${f.id}')">✓</button><button class="btn btn-reject" onclick="rejectFarm('${f.id}')">✕</button>`:''}
+        ${f.status==='approved'?`<button class="btn btn-reject" onclick="rejectFarm('${f.id}')">Suspend</button>`:''}
+        ${f.status==='rejected'?`<button class="btn btn-approve" onclick="approveFarm('${f.id}')">Reinstate</button>`:''}
+        <button class="btn btn-delete" onclick="deleteFarm('${f.id}')">Delete</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+// ── PENDING LISTINGS ──
+async function loadPendingListings(){
+  const {data}=await sb.from('listings').select('*').eq('approval_status','pending').order('created_at',{ascending:false});
+  const c=document.getElementById('pending-listings-content');
+  if(!data||data.length===0){c.innerHTML='<div class="empty"><div class="empty-icon">✅</div><div>No listings awaiting review</div></div>';return;}
+  c.innerHTML=`<div class="table-card"><div class="table-wrap"><table>
+    <thead><tr><th>Animal</th><th>Farm</th><th>Price</th><th>Submitted</th><th>Actions</th></tr></thead>
+    <tbody>${data.map(l=>`<tr>
+      <td><span style="font-size:15px;">${l.emoji||'🐍'}</span> <strong>${l.title||'—'}</strong><div style="font-size:11px;color:var(--ink-faint);">${l.sub||''}</div></td>
+      <td style="color:var(--ink-faint);">${l.farm||'—'}</td>
+      <td style="font-weight:600;color:var(--green-dark);">${l.price||'—'}</td>
+      <td style="color:var(--ink-faint);">${fmt(l.created_at)}</td>
+      <td><div class="btn-actions">
+        <button class="btn btn-approve" onclick="approveListing('${l.id}')">✓ Approve</button>
+        <button class="btn btn-reject" onclick="rejectListing('${l.id}')">✕ Reject</button>
+        <button class="btn btn-photos" onclick="openPhotoModal('${l.id}','${(l.title||'').replace(/'/g,"\\'")}')">📷</button>
+      </div></td>
+    </tr>`).join('')}</tbody>
+  </table></div></div>`;
+}
+
+// ── ALL LISTINGS ──
+async function loadAllListings(){
+  const {data}=await sb.from('listings').select('*').order('created_at',{ascending:false});
+  document.getElementById('all-listings-tbody').innerHTML=!(data&&data.length)
+    ?'<tr><td colspan="6" class="empty">No listings yet</td></tr>'
+    :data.map(l=>`<tr>
+      <td><span style="font-size:15px;">${l.emoji||'🐍'}</span> <strong>${l.title||'—'}</strong><div style="font-size:11px;color:var(--ink-faint);">${l.sub||''}</div></td>
+      <td style="color:var(--ink-faint);">${l.farm||'—'}</td>
+      <td style="font-weight:600;color:var(--green-dark);">${l.price||'—'}</td>
+      <td>${expiryBadge(l.expires_at)}</td>
+      <td><span class="pill pill-${l.approval_status||'pending'}">${l.approval_status||'pending'}</span></td>
+      <td><div class="btn-actions">
+        ${l.approval_status==='pending'?`<button class="btn btn-approve" onclick="approveListing('${l.id}')">✓</button><button class="btn btn-reject" onclick="rejectListing('${l.id}')">✕</button>`:''}
+        <button class="btn btn-photos" onclick="openPhotoModal('${l.id}','${(l.title||'').replace(/'/g,"\\'")}')">📷 Photos</button>
+        <button class="btn btn-delete" onclick="deleteListing('${l.id}')">Delete</button>
+      </div></td>
+    </tr>`).join('');
+}
+
+// ── FARM ACTIONS ──
+async function approveFarm(id){
+  await sb.from('farms').update({status:'approved'}).eq('id',id);
+  refreshAll();
+}
+async function rejectFarm(id){
+  if(!confirm('Reject this farm application?'))return;
+  await sb.from('farms').update({status:'rejected'}).eq('id',id);
+  refreshAll();
+}
+async function deleteFarm(id){
+  if(!confirm('Permanently delete this farm? This cannot be undone.'))return;
+  await sb.from('farms').delete().eq('id',id);
+  loadAllFarms();
+}
+
+// ── LISTING ACTIONS ──
+async function approveListing(id){
+  await sb.from('listings').update({approval_status:'approved'}).eq('id',id);
+  refreshAll();
+}
+async function rejectListing(id){
+  if(!confirm('Reject this listing?'))return;
+  await sb.from('listings').update({approval_status:'rejected'}).eq('id',id);
+  refreshAll();
+}
+async function deleteListing(id){
+  if(!confirm('Delete this listing?'))return;
+  await sb.from('listings').delete().eq('id',id);
+  loadAllListings();
+}
+function refreshAll(){
+  loadOverview();
+  const activePanel=document.querySelector('.adm-panel.active');
+  if(activePanel)loadTab(activePanel.id.replace('panel-',''));
+}
+
+// ── PHOTO EDITOR ──
+let photoListingId=null,photoArr=[];
+let dragSrc=null;
+
+async function openPhotoModal(id,name){
+  photoListingId=id;
+  document.getElementById('photo-modal-name').textContent=name;
+  const {data}=await sb.from('listings').select('photos').eq('id',id).single();
+  photoArr=(data&&data.photos)?[...data.photos]:[];
+  renderPhotoGrid();
+  document.getElementById('photo-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  document.getElementById('photo-notice').className='notice';
+}
+function closePhotoModal(){
+  document.getElementById('photo-modal').classList.remove('open');
+  document.body.style.overflow='';
+  photoListingId=null;photoArr=[];
+  document.getElementById('photo-url-input').value='';
+}
+function renderPhotoGrid(){
+  const g=document.getElementById('photo-grid');
+  document.getElementById('photo-count').textContent=`(${photoArr.length}/6)`;
+  if(!photoArr.length){g.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:1.5rem;color:var(--ink-faint);font-size:13px;">No photos yet</div>';return;}
+  g.innerHTML=photoArr.map((src,i)=>`
+    <div class="photo-slot" draggable="true" ondragstart="dragStart(${i})" ondragover="dragOver(event,${i})" ondrop="dragDrop(${i})" ondragend="dragEnd()">
+      <img src="${src}" onerror="this.parentElement.innerHTML='<div style=padding:1rem;color:var(--ink-faint);font-size:11px;>Load error</div>'">
+      ${i===0?'<div class="photo-main-badge">Main</div>':''}
+      <button class="photo-del" onclick="removePhoto(${i})">✕</button>
+    </div>`).join('');
+}
+function removePhoto(i){photoArr.splice(i,1);renderPhotoGrid();}
+function handlePhotoUpload(input){
+  const files=Array.from(input.files);
+  const rem=6-photoArr.length;
+  if(rem<=0){showPhotoNotice('Maximum 6 photos reached.','err');return;}
+  files.slice(0,rem).forEach(f=>{
+    if(f.size>5*1024*1024){showPhotoNotice(f.name+' is over 5MB.','err');return;}
+    const r=new FileReader();r.onload=e=>{photoArr.push(e.target.result);renderPhotoGrid();};r.readAsDataURL(f);
+  });
+  input.value='';
+}
+function addPhotoUrl(){
+  const url=document.getElementById('photo-url-input').value.trim();
+  if(!url){return;}
+  if(photoArr.length>=6){showPhotoNotice('Maximum 6 photos.','err');return;}
+  if(!url.startsWith('http')){showPhotoNotice('Please enter a valid URL.','err');return;}
+  photoArr.push(url);
+  document.getElementById('photo-url-input').value='';
+  renderPhotoGrid();
+}
+async function savePhotos(){
+  if(!photoListingId)return;
+  const btn=document.getElementById('photo-save-btn');btn.textContent='Saving…';btn.disabled=true;
+  const {error}=await sb.from('listings').update({photos:photoArr}).eq('id',photoListingId);
+  btn.textContent='Save photos →';btn.disabled=false;
+  if(error){showPhotoNotice('Error: '+error.message,'err');}
+  else{showPhotoNotice('✓ Photos saved!','ok');setTimeout(closePhotoModal,1200);}
+}
+function showPhotoNotice(msg,type){const el=document.getElementById('photo-notice');el.textContent=msg;el.className='notice '+type;}
+// ── BANNER CONTROL ──────────────────────────────────────────
+let bannerFarms = [];   // ordered array of farm objects
+let bannerDragSrc = null;
+
+async function loadBannerControl(){
+  const list = document.getElementById('banner-drag-list');
+  const notice = document.getElementById('banner-notice');
+  list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--ink-faint);font-size:13px;">⏳ Loading farms…</div>';
+  notice.style.display = 'none';
+
+  // Fetch all approved farms ordered by display_order then name
+  const {data, error} = await sb.from('farms')
+    .select('id,name,logo,location,species,featured,display_order')
+    .eq('status','approved')
+    .order('display_order', {ascending:true, nullsFirst:false})
+    .order('name', {ascending:true});
+
+  if(error || !data){
+    list.innerHTML = `<div style="padding:16px;text-align:center;color:var(--red);font-size:13px;">Error: ${error?.message||'Could not load farms'}</div>`;
+    return;
+  }
+
+  // Sort: those with display_order first (in order), then rest
+  bannerFarms = data.slice().sort((a,b)=>{
+    const ao = a.display_order ?? 9999;
+    const bo = b.display_order ?? 9999;
+    if(ao !== bo) return ao - bo;
+    return (a.name||'').localeCompare(b.name||'');
+  });
+
+  document.getElementById('banner-count').textContent = `${bannerFarms.filter(f=>f.featured!==false).length} shown · ${bannerFarms.length} total`;
+  renderBannerList();
+  renderBannerPreview();
+}
+
+function renderBannerList(){
+  const list = document.getElementById('banner-drag-list');
+  if(!bannerFarms.length){
+    list.innerHTML = '<div style="padding:16px;text-align:center;color:var(--ink-faint);font-size:13px;">No approved farms yet.</div>';
+    return;
+  }
+
+  list.innerHTML = bannerFarms.map((f,i) => {
+    const logoHtml = f.logo
+      ? `<img src="${f.logo}" alt="${f.name}">`
+      : '🐍';
+    const isOn = f.featured !== false; // default true if null
+    return `
+      <div class="banner-item" id="bitem-${f.id}" draggable="true"
+        ondragstart="bannerDragStart(${i})"
+        ondragover="bannerDragOver(event,${i})"
+        ondrop="bannerDrop(event,${i})"
+        ondragend="bannerDragEnd()"
+        ondragleave="bannerDragLeave(${i})">
+        <div class="banner-item-pos">${i+1}</div>
+        <div class="banner-drag-handle" title="Drag to reorder">⠿</div>
+        <div class="banner-item-logo">${logoHtml}</div>
+        <div class="banner-item-info">
+          <div class="banner-item-name">${f.name||'Unnamed'}</div>
+          <div class="banner-item-sub">${f.location||'Thailand'}${f.species?` · ${f.species}`:''}</div>
+        </div>
+        <div class="toggle-wrap">
+          <label class="toggle" title="${isOn?'Shown in banner':'Hidden from banner'}">
+            <input type="checkbox" ${isOn?'checked':''} onchange="bannerToggle('${f.id}',this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+          <div class="toggle-lbl" id="tlbl-${f.id}">${isOn?'Shown':'Hidden'}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderBannerPreview(){
+  const preview = document.getElementById('banner-preview');
+  const shown = bannerFarms.filter(f => f.featured !== false);
+  if(!shown.length){
+    preview.innerHTML = '<div style="font-size:12px;color:var(--ink-faint);padding:8px;">No farms shown — toggle some on above</div>';
+    return;
+  }
+  preview.innerHTML = shown.map(f => {
+    const logoHtml = f.logo
+      ? `<img src="${f.logo}" alt="${f.name}" style="width:100%;height:100%;object-fit:cover;border-radius:3px;">`
+      : '🐍';
+    return `<div class="preview-pill">
+      <div class="preview-pill-logo">${logoHtml}</div>
+      ${f.name}
+    </div>`;
+  }).join('');
+}
+
+function bannerToggle(farmId, checked){
+  const farm = bannerFarms.find(f => f.id === farmId);
+  if(!farm) return;
+  farm.featured = checked;
+  // Update label
+  const lbl = document.getElementById('tlbl-'+farmId);
+  if(lbl) lbl.textContent = checked ? 'Shown' : 'Hidden';
+  // Update count
+  document.getElementById('banner-count').textContent = `${bannerFarms.filter(f=>f.featured!==false).length} shown · ${bannerFarms.length} total`;
+  renderBannerPreview();
+}
+
+// ── DRAG & DROP ──────────────────────────────────────────────
+function bannerDragStart(i){
+  bannerDragSrc = i;
+  setTimeout(()=>{ const el=document.getElementById('bitem-'+bannerFarms[i].id); if(el)el.classList.add('dragging'); },0);
+}
+function bannerDragOver(e,i){
+  e.preventDefault();
+  document.querySelectorAll('.banner-item').forEach(el=>el.classList.remove('drag-over'));
+  const el=document.getElementById('bitem-'+bannerFarms[i].id);
+  if(el) el.classList.add('drag-over');
+}
+function bannerDragLeave(i){
+  const el=document.getElementById('bitem-'+bannerFarms[i].id);
+  if(el) el.classList.remove('drag-over');
+}
+function bannerDrop(e,i){
+  e.preventDefault();
+  if(bannerDragSrc===null||bannerDragSrc===i) return;
+  const moved = bannerFarms.splice(bannerDragSrc,1)[0];
+  bannerFarms.splice(i,0,moved);
+  bannerDragSrc = null;
+  renderBannerList();
+  renderBannerPreview();
+}
+function bannerDragEnd(){
+  bannerDragSrc = null;
+  document.querySelectorAll('.banner-item').forEach(el=>{
+    el.classList.remove('dragging','drag-over');
+  });
+}
+
+// ── SAVE ORDER ───────────────────────────────────────────────
+async function saveBannerOrder(){
+  const btn = document.getElementById('banner-save-btn');
+  const notice = document.getElementById('banner-notice');
+  btn.textContent = '⏳ Saving…'; btn.disabled = true;
+  notice.style.display = 'none';
+
+  try{
+    // Update each farm with its new display_order and featured flag
+    const updates = bannerFarms.map((f,i) =>
+      sb.from('farms').update({
+        display_order: i + 1,
+        featured: f.featured !== false
+      }).eq('id', f.id)
+    );
+    const results = await Promise.all(updates);
+    const errors = results.filter(r => r.error);
+
+    if(errors.length){
+      throw new Error(errors[0].error.message);
+    }
+
+    notice.style.display = 'block';
+    notice.style.background = 'var(--green-light)';
+    notice.style.color = 'var(--green-dark)';
+    notice.textContent = '✅ Banner order saved! Homepage will reflect changes immediately.';
+    document.getElementById('banner-count').textContent = `${bannerFarms.filter(f=>f.featured!==false).length} shown · ${bannerFarms.length} total`;
+
+  }catch(e){
+    notice.style.display = 'block';
+    notice.style.background = 'var(--red-light)';
+    notice.style.color = 'var(--red)';
+    notice.textContent = '❌ Error saving: '+e.message+'. Make sure display_order and featured columns exist in your farms table.';
+  }
+
+  btn.textContent = '💾 Save order'; btn.disabled = false;
+  setTimeout(()=>notice.style.display='none', 4000);
+}
+
+// ── Drag reorder (photos — existing) ──
+function dragStart(i){dragSrc=i;document.querySelectorAll('.photo-slot')[i].style.opacity='0.4';}
+function dragOver(e,i){e.preventDefault();document.querySelectorAll('.photo-slot').forEach((s,idx)=>s.style.outline=idx===i?'2px dashed var(--green)':'');}
+function dragDrop(i){if(dragSrc===null||dragSrc===i)return;const moved=photoArr.splice(dragSrc,1)[0];photoArr.splice(i,0,moved);renderPhotoGrid();}
+function dragEnd(){dragSrc=null;document.querySelectorAll('.photo-slot').forEach(s=>{s.style.opacity='';s.style.outline='';});}
+
+// ── LAUNCH ──
+function launchDashboard(){
+  show('screen-dashboard');
+  loadOverview();
+}
+async function startApp(){
+  const t=setTimeout(()=>show('screen-login'),5000);
+  try{
+    const {data,error}=await sb.auth.getSession();
+    clearTimeout(t);
+    if(error||!data.session){show('screen-login');return;}
+    if(data.session.user.email!==ADMIN_EMAIL){await sb.auth.signOut();show('screen-login');return;}
+    launchDashboard();
+  }catch(e){clearTimeout(t);show('screen-login');}
+}
+
+document.addEventListener('DOMContentLoaded',initSupabase);
+</script>
+</body>
+</html>
